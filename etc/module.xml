@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Commerce_AdminUserLifecycle">
+        <sequence>
+            <module name="Commerce_Foundation"/>
+            <module name="Commerce_Logger"/>
+            <module name="Magento_Authorization"/>
+            <module name="Magento_Backend"/>
+            <module name="Magento_Email"/>
+            <module name="Magento_User"/>
+        </sequence>
+    </module>
+</config>

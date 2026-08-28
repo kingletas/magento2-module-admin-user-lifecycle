@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!-- An append-only journal of everything this module did or would have done. -->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="commerce_adminuser_lifecycle" resource="default" engine="innodb"
+           comment="Audit journal of admin account lifecycle actions">
+        <column xsi:type="int" name="entry_id" unsigned="true" nullable="false" identity="true"
+                comment="Entry ID"/>
+        <column xsi:type="int" name="user_id" unsigned="true" nullable="false"
+                comment="admin_user.user_id at the time of the action"/>
+        <column xsi:type="varchar" name="username" length="40" nullable="true"
+                comment="Username, copied so the record outlives the account"/>
+        <column xsi:type="varchar" name="email" length="128" nullable="true"
+                comment="Email, copied so the record outlives the account"/>
+        <column xsi:type="varchar" name="action" length="16" nullable="false"
+                comment="warned, deactivated, adopted, deleted or skipped"/>
+        <column xsi:type="varchar" name="reason" length="255" nullable="true"
+                comment="Why the action was taken, or why it was skipped"/>
+        <column xsi:type="varchar" name="actor" length="16" nullable="false" default="cron"
+                comment="What ran the pass: cron, cli or api"/>
+        <column xsi:type="boolean" name="dry_run" nullable="false" default="false"
+                comment="Whether the action was simulated rather than applied"/>
+        <column xsi:type="datetime" name="occurred_at" nullable="false"
+                comment="UTC time of the action"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entry_id"/>
+        </constraint>
+        <!--
+            "When was this user last deactivated" is the read that gates every
+            deletion, and it filters on all three columns in this order.
+        -->
+        <index referenceId="COMMERCE_ADMINUSER_LIFECYCLE_USER_ID_ACTION_OCCURRED_AT" indexType="btree">
+            <column name="user_id"/>
+            <column name="action"/>
+            <column name="occurred_at"/>
+        </index>
+        <!-- Pruning scans by age. -->
+        <index referenceId="COMMERCE_ADMINUSER_LIFECYCLE_OCCURRED_AT" indexType="btree">
+            <column name="occurred_at"/>
+        </index>
+    </table>
+</schema>

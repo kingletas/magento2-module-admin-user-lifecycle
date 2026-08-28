@@ -1,0 +1,39 @@
+<!--@subject Your admin account has not been used recently @-->
+<!--@vars {
+"var name":"Recipient name",
+"var username":"Admin username",
+"var deactivate_at":"Deactivation date",
+"var days_left":"Days remaining"
+} @-->
+
+<table cellpadding="0" cellspacing="0" border="0"
+       style="width:100%;max-width:640px;border-collapse:collapse;color:#222;
+              font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+    <tr>
+        <td style="padding:16px;border:1px solid #e0e0e0">
+            <p style="margin:0 0 12px;font-size:14px;line-height:1.5">Hello {{var name}},</p>
+
+            <p style="margin:0 0 12px;font-size:14px;line-height:1.5">
+                The administrator account <strong>{{var username}}</strong> has not been signed into for
+                some time. Unless it is used before <strong>{{var deactivate_at}}</strong>
+                ({{var days_left}} days from now) it will be deactivated automatically.
+            </p>
+
+            <p style="margin:0 0 12px;font-size:14px;line-height:1.5">
+                <strong>To keep the account, simply sign in as usual.</strong> There is nothing else to do
+                and nothing here to click.
+            </p>
+
+            <p style="margin:0 0 12px;font-size:14px;line-height:1.5">
+                If the account is no longer needed, you can ignore this message and it will be switched off
+                on that date. Deactivation is reversible - ask whoever administers the store to re-enable it.
+            </p>
+
+            <p style="margin:18px 0 0;font-size:11px;color:#888;line-height:1.5">
+                This message was sent automatically because of an account inactivity policy. It will never
+                ask you for a password and contains no sign-in link: reach the admin panel the way you
+                normally do, from a bookmark or address you already trust.
+            </p>
+        </td>
+    </tr>
+</table>

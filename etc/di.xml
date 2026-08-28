@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!--
+        The config section id lives here and nowhere else, which is what lets
+        `bin/rebrand` retarget it.
+    -->
+    <type name="Commerce\AdminUserLifecycle\Model\Config">
+        <arguments>
+            <argument name="section" xsi:type="string">commerce_adminusers</argument>
+        </arguments>
+    </type>
+
+    <preference for="Commerce\AdminUserLifecycle\Api\AdminUserFinderInterface"
+                type="Commerce\AdminUserLifecycle\Model\ResourceModel\AdminUserFinder"/>
+    <preference for="Commerce\AdminUserLifecycle\Api\LifecycleJournalInterface"
+                type="Commerce\AdminUserLifecycle\Model\ResourceModel\LifecycleJournal"/>
+    <preference for="Commerce\AdminUserLifecycle\Api\AdminUserWriterInterface"
+                type="Commerce\AdminUserLifecycle\Model\ResourceModel\AdminUserWriter"/>
+    <!--
+        Ending a retired account's live sessions needs Magento_Security's
+        session registry.
+    -->
+    <preference for="Commerce\AdminUserLifecycle\Api\SessionTerminatorInterface"
+                type="Commerce\AdminUserLifecycle\Model\Security\AdminSessionTerminator"/>
+    <preference for="Commerce\AdminUserLifecycle\Api\UserNotifierInterface"
+                type="Commerce\AdminUserLifecycle\Model\Notification\UserEmailNotifier"/>
+    <preference for="Commerce\AdminUserLifecycle\Api\ReportNotifierInterface"
+                type="Commerce\AdminUserLifecycle\Model\Notification\ReportEmailNotifier"/>
+
+    <!-- The REST surface. -->
+    <preference for="Commerce\AdminUserLifecycle\Api\LifecycleCandidateProviderInterface"
+                type="Commerce\AdminUserLifecycle\Model\Api\CandidateProvider"/>
+    <preference for="Commerce\AdminUserLifecycle\Api\LifecycleManagementInterface"
+                type="Commerce\AdminUserLifecycle\Model\Api\LifecycleManagement"/>
+    <preference for="Commerce\AdminUserLifecycle\Api\LifecycleJournalReaderInterface"
+                type="Commerce\AdminUserLifecycle\Model\Api\JournalReader"/>
+    <preference for="Commerce\AdminUserLifecycle\Api\JournalQueryInterface"
+                type="Commerce\AdminUserLifecycle\Model\ResourceModel\LifecycleJournal"/>
+
+    <!-- Ordered pipeline. -->
+    <type name="Commerce\AdminUserLifecycle\Model\Service\LifecycleRunner">
+        <arguments>
+            <argument name="stages" xsi:type="array">
+                <item name="warn" xsi:type="object">Commerce\AdminUserLifecycle\Model\Service\WarnInactiveUsers</item>
+                <item name="deactivate" xsi:type="object">Commerce\AdminUserLifecycle\Model\Service\DeactivateInactiveUsers</item>
+                <item name="delete" xsi:type="object">Commerce\AdminUserLifecycle\Model\Service\DeleteDeactivatedUsers</item>
+            </argument>
+            <argument name="logger" xsi:type="object">Commerce\AdminUserLifecycle\Logger</argument>
+        </arguments>
+    </type>
+
+    <!--
+        The three things every stage needs and none of them is about: the
+        config reader, the module's own log channel, and the journal-row
+        mapper.
+    -->
+    <virtualType name="Commerce\AdminUserLifecycle\Service\StageContext"
+                 type="Commerce\AdminUserLifecycle\Model\Service\StageContext">
+        <arguments>
+            <argument name="logger" xsi:type="object">Commerce\AdminUserLifecycle\Logger</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Commerce\AdminUserLifecycle\Model\Service\WarnInactiveUsers">
+        <arguments>
+            <argument name="context" xsi:type="object">Commerce\AdminUserLifecycle\Service\StageContext</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\AdminUserLifecycle\Model\Service\DeactivateInactiveUsers">
+        <arguments>
+            <argument name="context" xsi:type="object">Commerce\AdminUserLifecycle\Service\StageContext</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\AdminUserLifecycle\Model\Service\DeleteDeactivatedUsers">
+        <arguments>
+            <argument name="context" xsi:type="object">Commerce\AdminUserLifecycle\Service\StageContext</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\AdminUserLifecycle\Model\Security\AdminSessionTerminator">
+        <arguments>
+            <argument name="logger" xsi:type="object">Commerce\AdminUserLifecycle\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\AdminUserLifecycle\Model\Notification\UserEmailNotifier">
+        <arguments>
+            <argument name="logger" xsi:type="object">Commerce\AdminUserLifecycle\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\AdminUserLifecycle\Model\Notification\ReportEmailNotifier">
+        <arguments>
+            <argument name="logger" xsi:type="object">Commerce\AdminUserLifecycle\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\AdminUserLifecycle\Model\Api\LifecycleManagement">
+        <arguments>
+            <argument name="logger" xsi:type="object">Commerce\AdminUserLifecycle\Logger</argument>
+        </arguments>
+    </type>
+    <!-- What the module announces to anything listening from outside it. -->
+    <type name="Commerce\AdminUserLifecycle\Model\Event\LifecycleEventDispatcher">
+        <arguments>
+            <argument name="logger" xsi:type="object">Commerce\AdminUserLifecycle\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\AdminUserLifecycle\Cron\RunLifecycle">
+        <arguments>
+            <argument name="logger" xsi:type="object">Commerce\AdminUserLifecycle\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Commerce\AdminUserLifecycle\Cron\PruneJournal">
+        <arguments>
+            <argument name="logger" xsi:type="object">Commerce\AdminUserLifecycle\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- A dedicated channel, not the system log. -->
+    <virtualType name="Commerce\AdminUserLifecycle\Logger\Handler" type="Commerce\Logger\Handler">
+        <arguments>
+            <argument name="fileName" xsi:type="string">admin-user-lifecycle.log</argument>
+            <argument name="subDirectory" xsi:type="string">commerce</argument>
+            <argument name="maxFiles" xsi:type="number">90</argument>
+            <argument name="level" xsi:type="string">info</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Commerce\AdminUserLifecycle\Logger" type="Commerce\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">commerce_adminusers</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Commerce\AdminUserLifecycle\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- The command name is wiring, so `bin/rebrand` rewrites it with the rest. -->
+    <type name="Commerce\AdminUserLifecycle\Console\Command\RunLifecycleCommand">
+        <arguments>
+            <argument name="name" xsi:type="string">commerce:admin-users:lifecycle</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="commerce_adminusers_lifecycle" xsi:type="object">Commerce\AdminUserLifecycle\Console\Command\RunLifecycleCommand</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

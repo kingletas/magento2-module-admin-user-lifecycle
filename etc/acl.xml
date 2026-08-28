@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!--
+    The parent chain has to match Magento_Config's own acl.xml exactly: admin >
+    stores > stores_settings > config.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <!--
+                    The operational resources, which is what the REST routes
+                    are authorised against.
+                -->
+                <resource id="Magento_Backend::system">
+                    <resource id="Commerce_AdminUserLifecycle::lifecycle" title="Admin User Lifecycle"
+                              translate="title" sortOrder="95">
+                        <resource id="Commerce_AdminUserLifecycle::view" title="View Candidates And Journal"
+                                  translate="title" sortOrder="10"/>
+                        <resource id="Commerce_AdminUserLifecycle::run" title="Run A Lifecycle Pass"
+                                  translate="title" sortOrder="20"/>
+                        <resource id="Commerce_AdminUserLifecycle::warn" title="Warn An Account"
+                                  translate="title" sortOrder="30"/>
+                        <resource id="Commerce_AdminUserLifecycle::deactivate" title="Deactivate An Account"
+                                  translate="title" sortOrder="40"/>
+                        <!--
+                            Its own resource, and the only irreversible one.
+                        -->
+                        <resource id="Commerce_AdminUserLifecycle::delete" title="Delete An Account"
+                                  translate="title" sortOrder="50"/>
+                    </resource>
+                </resource>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Commerce_AdminUserLifecycle::config"
+                                      title="Admin User Lifecycle Section"
+                                      translate="title"
+                                      sortOrder="120"/>
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

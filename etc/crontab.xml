@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="commerce_adminusers_lifecycle"
+             instance="Commerce\AdminUserLifecycle\Cron\RunLifecycle"
+             method="execute">
+            <config_path>commerce_adminusers/general/cron_expression</config_path>
+        </job>
+        <!--
+            A fixed schedule: how long the journal is kept is a setting, that
+            it is trimmed is not.
+        -->
+        <job name="commerce_adminusers_prune_journal"
+             instance="Commerce\AdminUserLifecycle\Cron\PruneJournal"
+             method="execute">
+            <schedule>40 3 * * *</schedule>
+        </job>
+    </group>
+</config>

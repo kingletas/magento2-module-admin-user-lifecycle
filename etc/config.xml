@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!-- Defaults are deliberately inert. -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <commerce_adminusers>
+            <general>
+                <enabled>0</enabled>
+                <!-- The scheduled pass, on by default. -->
+                <cron_enabled>1</cron_enabled>
+                <cron_expression>0 2 * * *</cron_expression>
+                <!-- Global kill switch over every write. -->
+                <dry_run>1</dry_run>
+                <batch_size>200</batch_size>
+            </general>
+            <warn>
+                <enabled>1</enabled>
+                <!-- Days of warning before deactivation. -->
+                <days_before>7</days_before>
+            </warn>
+            <deactivate>
+                <enabled>1</enabled>
+                <!-- 90 rather than the 45 this replaces. -->
+                <inactive_days>90</inactive_days>
+                <!--
+                    A brand new account has logdate NULL until its owner first
+                    signs in.
+                -->
+                <new_account_grace_days>30</new_account_grace_days>
+            </deactivate>
+            <delete>
+                <!--
+                    Off by default: deleting an admin user is irreversible and
+                    takes its role assignments with it.
+                -->
+                <enabled>0</enabled>
+                <!-- Measured from deactivation, not from last login. -->
+                <deactivated_days>180</deactivated_days>
+            </delete>
+            <protect>
+                <usernames/>
+                <role_ids/>
+                <!-- Never leave fewer than this many active administrators. -->
+                <min_active_admins>2</min_active_admins>
+            </protect>
+            <report>
+                <enabled>1</enabled>
+                <recipients/>
+                <email_template>commerce_adminusers_report_email_template</email_template>
+                <sender_identity>general</sender_identity>
+                <!-- Only mail a report when something actually happened. -->
+                <only_when_changed>1</only_when_changed>
+                <journal_retention_days>730</journal_retention_days>
+            </report>
+        </commerce_adminusers>
+    </default>
+</config>

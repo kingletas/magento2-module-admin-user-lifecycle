@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="commerce_adminusers_report_email_template"
+              label="Commerce Admin User Lifecycle Report"
+              file="lifecycle_report.html"
+              type="html"
+              module="Commerce_AdminUserLifecycle"
+              area="adminhtml"/>
+    <template id="commerce_adminusers_warning_email_template"
+              label="Commerce Admin User Inactivity Warning"
+              file="inactivity_warning.html"
+              type="html"
+              module="Commerce_AdminUserLifecycle"
+              area="adminhtml"/>
+</config>

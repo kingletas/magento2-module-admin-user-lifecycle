@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- Integration suite. -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         bootstrap="Test/integration-bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         failOnWarning="true"
+         failOnNotice="true"
+         displayDetailsOnTestsThatTriggerWarnings="true">
+    <testsuites>
+        <testsuite name="integration">
+            <directory suffix="Test.php">Test/Integration</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

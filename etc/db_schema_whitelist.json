@@ -1,0 +1,22 @@
+{
+    "commerce_adminuser_lifecycle": {
+        "column": {
+            "entry_id": true,
+            "user_id": true,
+            "username": true,
+            "email": true,
+            "action": true,
+            "reason": true,
+            "actor": true,
+            "dry_run": true,
+            "occurred_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        },
+        "index": {
+            "COMMERCE_ADMINUSER_LIFECYCLE_USER_ID_ACTION_OCCURRED_AT": true,
+            "COMMERCE_ADMINUSER_LIFECYCLE_OCCURRED_AT": true
+        }
+    }
+}

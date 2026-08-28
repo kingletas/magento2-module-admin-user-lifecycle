@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!-- The out-of-process surface. -->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+
+    <route url="/V1/commerce/adminUserLifecycle/candidates" method="GET">
+        <service class="Commerce\AdminUserLifecycle\Api\LifecycleCandidateProviderInterface" method="getList"/>
+        <resources>
+            <resource ref="Commerce_AdminUserLifecycle::view"/>
+        </resources>
+    </route>
+
+    <route url="/V1/commerce/adminUserLifecycle/journal" method="GET">
+        <service class="Commerce\AdminUserLifecycle\Api\LifecycleJournalReaderInterface" method="getEntries"/>
+        <resources>
+            <resource ref="Commerce_AdminUserLifecycle::view"/>
+        </resources>
+    </route>
+
+    <!-- The whole pipeline, once. -->
+    <route url="/V1/commerce/adminUserLifecycle/run" method="POST">
+        <service class="Commerce\AdminUserLifecycle\Api\LifecycleManagementInterface" method="run"/>
+        <resources>
+            <resource ref="Commerce_AdminUserLifecycle::run"/>
+        </resources>
+    </route>
+
+    <route url="/V1/commerce/adminUserLifecycle/users/:userId/warn" method="POST">
+        <service class="Commerce\AdminUserLifecycle\Api\LifecycleManagementInterface" method="warn"/>
+        <resources>
+            <resource ref="Commerce_AdminUserLifecycle::warn"/>
+        </resources>
+    </route>
+
+    <route url="/V1/commerce/adminUserLifecycle/users/:userId/deactivate" method="POST">
+        <service class="Commerce\AdminUserLifecycle\Api\LifecycleManagementInterface" method="deactivate"/>
+        <resources>
+            <resource ref="Commerce_AdminUserLifecycle::deactivate"/>
+        </resources>
+    </route>
+
+    <!-- POST rather than DELETE, and not /V1/.../users/:userId. -->
+    <route url="/V1/commerce/adminUserLifecycle/users/:userId/delete" method="POST">
+        <service class="Commerce\AdminUserLifecycle\Api\LifecycleManagementInterface" method="delete"/>
+        <resources>
+            <resource ref="Commerce_AdminUserLifecycle::delete"/>
+        </resources>
+    </route>
+</routes>

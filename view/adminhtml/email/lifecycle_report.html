@@ -1,0 +1,47 @@
+<!--@subject {{var subject}} @-->
+<!--@vars {
+"var subject":"Subject",
+"var summary":"Plain-text summary",
+"var active_admins":"Active administrators before the pass",
+"var dry_run":"Whether the pass only reported what it would have done",
+"var stages_html|raw":"Per-stage tables, escaped by ReportFormatter"
+} @-->
+
+<table cellpadding="0" cellspacing="0" border="0"
+       style="width:100%;max-width:760px;border-collapse:collapse;color:#222;
+              font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+    <tr>
+        <td style="padding:14px 16px;background:#37474f;color:#ffffff">
+            <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.85">
+                Admin user lifecycle
+            </div>
+            <div style="font-size:18px;font-weight:600;padding-top:4px">{{var subject}}</div>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding:16px;border:1px solid #e0e0e0;border-top:none">
+            {{depend dry_run}}
+            <p style="margin:0 0 14px;padding:10px 12px;background:#fdf3d8;border-left:3px solid #8a6100;
+                      font-size:13px;line-height:1.5">
+                <strong>This was a dry run.</strong> Nothing below was applied. Everything listed is what
+                the next live pass would do with the current settings.
+            </p>
+            {{/depend}}
+
+            <p style="margin:0 0 12px;font-size:13px;color:#555">
+                Active administrators before the pass: {{var active_admins}}
+            </p>
+
+            <pre style="margin:0 0 8px;padding:10px 12px;background:#f7f7f7;border:1px solid #eee;
+                        font-size:12px;line-height:1.5;white-space:pre-wrap">{{var summary}}</pre>
+
+            {{var stages_html|raw}}
+
+            <p style="margin:20px 0 0;font-size:11px;color:#888;line-height:1.5">
+                Automated message from Commerce_AdminUserLifecycle. Every line above is also in the
+                <code>commerce_adminuser_lifecycle</code> journal table and in
+                <code>var/log/commerce/admin-user-lifecycle.log</code>.
+            </p>
+        </td>
+    </tr>
+</table>

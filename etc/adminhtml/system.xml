@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="commerce" translate="label" sortOrder="400">
+            <label>Commerce</label>
+        </tab>
+        <section id="commerce_adminusers" translate="label" type="text" sortOrder="20"
+                 showInDefault="1" showInWebsite="0" showInStore="0">
+            <class>separator-top</class>
+            <label>Admin User Lifecycle</label>
+            <tab>commerce</tab>
+            <resource>Commerce_AdminUserLifecycle::config</resource>
+
+            <group id="general" translate="label" type="text" sortOrder="10"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General</label>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Off by default. Nothing runs until this is on.</comment>
+                </field>
+                <field id="dry_run" translate="label comment" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Dry Run</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[On by default. Every stage runs and reports exactly what it would do,
+                        but nothing is written to <code>admin_user</code> and no warning mail is sent.
+                        Leave it on for at least one full cycle after changing a threshold.]]></comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="cron_enabled" translate="label comment" type="select" sortOrder="25"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Run On A Schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[On by default. Turn it off where something outside the store owns the
+                        schedule and drives the pass over the REST API - the module stays enabled and the API
+                        keeps working, so this is the setting to use rather than switching the module off.]]></comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="cron_expression" translate="label comment" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Schedule</label>
+                    <backend_model>Commerce\AdminUserLifecycle\Model\Config\Backend\CronExpression</backend_model>
+                    <comment>Standard five-field cron expression. Defaults to 02:00 daily.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="cron_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="batch_size" translate="label comment" type="text" sortOrder="40"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Batch Size</label>
+                    <validate>validate-digits validate-digits-range digits-range-1-10000</validate>
+                    <comment>Users loaded per page. Keeps a store with thousands of admin accounts
+                        off a single unbounded collection load.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="warn" translate="label comment" type="text" sortOrder="20"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Stage 1 - Warning</label>
+                <comment>Emails a dormant user before their account is deactivated. A user who signs
+                    in after being warned resets the clock and is warned again next time.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Warn Before Deactivating</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="days_before" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Days of Notice</label>
+                    <validate>validate-digits validate-digits-range digits-range-1-365</validate>
+                    <comment>How long before deactivation the warning goes out.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="deactivate" translate="label comment" type="text" sortOrder="30"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Stage 2 - Deactivation</label>
+                <comment>Deactivation is what actually closes the access window. It is reversible:
+                    an administrator can re-enable the account at any time.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Deactivate Dormant Accounts</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="inactive_days" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Days Without Signing In</label>
+                    <validate>validate-digits validate-digits-range digits-range-1-3650</validate>
+                    <comment>Measured from the last sign-in.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="new_account_grace_days" translate="label comment" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Grace For Accounts That Have Never Signed In</label>
+                    <validate>validate-digits validate-digits-range digits-range-0-3650</validate>
+                    <comment><![CDATA[An account that has never been used has no last-sign-in date at all,
+                        so it is aged from its creation date and given this long first. Without it,
+                        every account created today reads as dormant since the beginning of time.]]></comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="delete" translate="label comment" type="text" sortOrder="40"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Stage 3 - Deletion</label>
+                <comment><![CDATA[<strong>Irreversible.</strong> Deleting an admin user removes their role
+                    assignment with them, and nothing in Magento restores it. Off by default.]]></comment>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Delete Long-Deactivated Accounts</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Deleted accounts stay in this module's journal, but not in Magento.</comment>
+                </field>
+                <field id="deactivated_days" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Days Since Deactivation</label>
+                    <validate>validate-digits validate-digits-range digits-range-1-3650</validate>
+                    <comment><![CDATA[Counted from the deactivation recorded in the journal, not from the
+                        last sign-in - so this threshold can never overtake the deactivation one.
+                        An account deactivated by hand is adopted into the journal on the next pass and
+                        starts its clock then, never retroactively.]]></comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="protect" translate="label comment" type="text" sortOrder="50"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Protection</label>
+                <comment>Checked before every write, at both stages. A protected account is journalled
+                    as skipped so the exclusion is visible in the report rather than silent.</comment>
+                <field id="min_active_admins" translate="label comment" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Minimum Active Administrators</label>
+                    <validate>validate-digits validate-digits-range digits-range-1-1000</validate>
+                    <comment>The module stops deactivating once this many active accounts remain,
+                        whatever the thresholds say. It is never allowed below 1.</comment>
+                </field>
+                <field id="usernames" translate="label comment" type="textarea" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Never Touch These Usernames</label>
+                    <comment>Comma or newline separated. Matched case-insensitively. Service and
+                        break-glass accounts belong here.</comment>
+                </field>
+                <field id="role_ids" translate="label comment" type="multiselect" sortOrder="30"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Never Touch These Roles</label>
+                    <source_model>Commerce\AdminUserLifecycle\Model\Source\AdminRoles</source_model>
+                    <can_be_empty>1</can_be_empty>
+                </field>
+            </group>
+
+            <group id="report" translate="label comment" type="text" sortOrder="60"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Reporting</label>
+                <comment>The run report is the only thing that makes a dry run useful, so it is on
+                    by default even when the module itself is off.</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Email a Report After Each Run</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="recipients" translate="label comment" type="textarea" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Report Recipients</label>
+                    <validate>validate-email-list</validate>
+                    <comment>Comma separated. With none set, no report is sent and the run is only
+                        recorded in the journal and the log.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="only_when_changed" translate="label comment" type="select" sortOrder="30"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Only When Something Happened</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>A daily "nothing to do" email is how people learn to filter this address.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="sender_identity" translate="label" type="select" sortOrder="40"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Sender</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="email_template" translate="label" type="select" sortOrder="50"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Report Template</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="journal_retention_days" translate="label comment" type="text" sortOrder="60"
+                       showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Journal Retention (Days)</label>
+                    <validate>validate-digits validate-digits-range digits-range-30-36500</validate>
+                    <comment><![CDATA[How long the audit journal is kept. It must comfortably exceed
+                        <em>Days Since Deactivation</em>, or the record of a deactivation is pruned
+                        before the deletion it authorises - the module refuses to prune inside that
+                        window regardless of what is set here.]]></comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
