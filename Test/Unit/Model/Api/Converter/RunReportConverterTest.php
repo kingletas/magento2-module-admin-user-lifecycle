@@ -16,30 +16,30 @@ use Commerce\AdminUserLifecycle\Model\RunReport;
 use Commerce\AdminUserLifecycle\Model\StageResult;
 use PHPUnit\Framework\TestCase;
 
-final class RunReportConverterTest extends TestCase
+class RunReportConverterTest extends TestCase
 {
     public function testThePassIsDescribedByItsActorClockAndStartingHeadcount(): void
     {
         $converted = $this->converter()->convert($this->report());
 
-        self::assertSame(JournalEntry::ACTOR_API, $converted->getActor());
-        self::assertFalse($converted->isDryRun());
-        self::assertSame('2026-08-27T14:30:00Z', $converted->getStartedAt());
-        self::assertSame(4, $converted->getActiveAdminsBefore());
+        $this->assertSame(JournalEntry::ACTOR_API, $converted->getActor());
+        $this->assertFalse($converted->isDryRun());
+        $this->assertSame('2026-08-27T14:30:00Z', $converted->getStartedAt());
+        $this->assertSame(4, $converted->getActiveAdminsBefore());
     }
 
     public function testEachStageCarriesItsCountsAndItsEntries(): void
     {
         $stages = $this->converter()->convert($this->report())->getStages();
 
-        self::assertCount(2, $stages);
-        self::assertSame('deactivate', $stages[0]->getStage());
-        self::assertTrue($stages[0]->isEnabled());
-        self::assertSame(3, $stages[0]->getExamined());
-        self::assertSame(1, $stages[0]->getActed());
-        self::assertSame(1, $stages[0]->getSkipped());
-        self::assertSame(0, $stages[0]->getFailed());
-        self::assertCount(2, $stages[0]->getEntries());
+        $this->assertCount(2, $stages);
+        $this->assertSame('deactivate', $stages[0]->getStage());
+        $this->assertTrue($stages[0]->isEnabled());
+        $this->assertSame(3, $stages[0]->getExamined());
+        $this->assertSame(1, $stages[0]->getActed());
+        $this->assertSame(1, $stages[0]->getSkipped());
+        $this->assertSame(0, $stages[0]->getFailed());
+        $this->assertCount(2, $stages[0]->getEntries());
     }
 
     /**
@@ -50,17 +50,17 @@ final class RunReportConverterTest extends TestCase
     {
         $stages = $this->converter()->convert($this->report())->getStages();
 
-        self::assertFalse($stages[1]->isEnabled());
-        self::assertSame(0, $stages[1]->getExamined());
-        self::assertSame([], $stages[1]->getEntries());
+        $this->assertFalse($stages[1]->isEnabled());
+        $this->assertSame(0, $stages[1]->getExamined());
+        $this->assertSame([], $stages[1]->getEntries());
     }
 
     public function testTheVerdictsAPassReachesSurviveTheConversion(): void
     {
         $converted = $this->converter()->convert($this->report());
 
-        self::assertTrue($converted->hasChanges());
-        self::assertFalse($converted->hasFailures());
+        $this->assertTrue($converted->hasChanges());
+        $this->assertFalse($converted->hasFailures());
     }
 
     /**
@@ -71,7 +71,7 @@ final class RunReportConverterTest extends TestCase
     {
         $report = new RunReport($this->context(), [], 4, 1.23456789);
 
-        self::assertSame(1.235, $this->converter()->convert($report)->getDurationSeconds());
+        $this->assertSame(1.235, $this->converter()->convert($report)->getDurationSeconds());
     }
 
     private function converter(): RunReportConverter

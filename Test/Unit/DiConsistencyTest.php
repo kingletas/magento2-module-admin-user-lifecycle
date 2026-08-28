@@ -16,7 +16,7 @@ use ReflectionClass;
 /**
  * `etc/di.xml` says what it means.
  */
-final class DiConsistencyTest extends TestCase
+class DiConsistencyTest extends TestCase
 {
     /** @var array<string, string> virtualType name => type */
     private array $virtualTypes = [];
@@ -44,7 +44,7 @@ final class DiConsistencyTest extends TestCase
             }
         }
 
-        self::assertSame([], $problems, implode("\n", $problems));
+        $this->assertSame([], $problems, implode("\n", $problems));
     }
 
     /**
@@ -77,7 +77,7 @@ final class DiConsistencyTest extends TestCase
             }
         }
 
-        self::assertSame([], $problems, implode("\n", $problems));
+        $this->assertSame([], $problems, implode("\n", $problems));
     }
 
     /**

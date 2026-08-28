@@ -17,7 +17,7 @@ use Commerce\AdminUserLifecycle\Model\Candidate;
 /**
  * The `admin_user` table, in an array, and writeable.
  */
-final class InMemoryDirectory implements AdminUserFinderInterface, AdminUserWriterInterface
+class InMemoryDirectory implements AdminUserFinderInterface, AdminUserWriterInterface
 {
     /** @var array<int, Candidate> Keyed by user id. */
     private array $users = [];

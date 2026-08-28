@@ -69,9 +69,9 @@ class LifecyclePipelineTest extends TestCase
 
         $report = $this->runner->run(JournalEntry::ACTOR_CLI, false);
 
-        self::assertSame(0, $this->isActive($userId), 'The account should be switched off.');
-        self::assertTrue($report->hasChanges());
-        self::assertNotEmpty($this->journal->getDeactivatedAt([$userId]));
+        $this->assertSame(0, $this->isActive($userId), 'The account should be switched off.');
+        $this->assertTrue($report->hasChanges());
+        $this->assertNotEmpty($this->journal->getDeactivatedAt([$userId]));
     }
 
     /**
@@ -83,9 +83,9 @@ class LifecyclePipelineTest extends TestCase
 
         $report = $this->runner->run(JournalEntry::ACTOR_CLI, true);
 
-        self::assertSame(1, $this->isActive($userId), 'A dry run must not write to admin_user.');
-        self::assertTrue($report->hasChanges(), 'It must still report what it would have done.');
-        self::assertSame(
+        $this->assertSame(1, $this->isActive($userId), 'A dry run must not write to admin_user.');
+        $this->assertTrue($report->hasChanges(), 'It must still report what it would have done.');
+        $this->assertSame(
             [],
             $this->journal->getDeactivatedAt([$userId]),
             'A simulated deactivation must not later authorise a real deletion.'
@@ -104,8 +104,8 @@ class LifecyclePipelineTest extends TestCase
 
         $this->runner->run(JournalEntry::ACTOR_CLI, false);
 
-        self::assertNull($this->isActive($userId), 'The account row should be gone.');
-        self::assertSame(0, $this->countRoleRows($userId), 'The permission row must go with the account.');
+        $this->assertNull($this->isActive($userId), 'The account row should be gone.');
+        $this->assertSame(0, $this->countRoleRows($userId), 'The permission row must go with the account.');
     }
 
     /**
@@ -118,8 +118,8 @@ class LifecyclePipelineTest extends TestCase
 
         $this->runner->run(JournalEntry::ACTOR_CLI, false);
 
-        self::assertSame(0, $this->isActive($userId), 'The account must survive its first sighting.');
-        self::assertNotEmpty(
+        $this->assertSame(0, $this->isActive($userId), 'The account must survive its first sighting.');
+        $this->assertNotEmpty(
             $this->journal->getDeactivatedAt([$userId]),
             'The adoption must start a clock the next pass can measure.'
         );
@@ -136,7 +136,7 @@ class LifecyclePipelineTest extends TestCase
 
         $this->runner->run(JournalEntry::ACTOR_CLI, false);
 
-        self::assertSame(1, $this->isActive($userId));
+        $this->assertSame(1, $this->isActive($userId));
     }
 
     /**

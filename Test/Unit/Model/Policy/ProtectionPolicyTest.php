@@ -12,13 +12,13 @@ use Commerce\AdminUserLifecycle\Model\Policy\ProtectionPolicy;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
 use PHPUnit\Framework\TestCase;
 
-final class ProtectionPolicyTest extends TestCase
+class ProtectionPolicyTest extends TestCase
 {
     public function testAnActiveAccountWithNothingAgainstItMayBeDeactivated(): void
     {
         $policy = $this->policy();
 
-        self::assertNull($policy->blockDeactivation($this->candidate(), 10));
+        $this->assertNull($policy->blockDeactivation($this->candidate(), 10));
     }
 
     public function testAProtectedUsernameIsNeverTouchedAtEitherStage(): void
@@ -27,19 +27,19 @@ final class ProtectionPolicyTest extends TestCase
         $active = $this->candidate(username: 'Integration');
         $inactive = $this->candidate(username: 'INTEGRATION', active: false);
 
-        self::assertSame(ProtectionPolicy::REASON_PROTECTED_USERNAME, $policy->blockDeactivation($active, 10));
-        self::assertSame(ProtectionPolicy::REASON_PROTECTED_USERNAME, $policy->blockDeletion($inactive));
+        $this->assertSame(ProtectionPolicy::REASON_PROTECTED_USERNAME, $policy->blockDeactivation($active, 10));
+        $this->assertSame(ProtectionPolicy::REASON_PROTECTED_USERNAME, $policy->blockDeletion($inactive));
     }
 
     public function testAProtectedRoleIsNeverTouched(): void
     {
         $policy = $this->policy(['protect/role_ids' => '4,9']);
 
-        self::assertSame(
+        $this->assertSame(
             ProtectionPolicy::REASON_PROTECTED_ROLE,
             $policy->blockDeactivation($this->candidate(roleId: 9), 10)
         );
-        self::assertNull($policy->blockDeactivation($this->candidate(roleId: 5), 10));
+        $this->assertNull($policy->blockDeactivation($this->candidate(roleId: 5), 10));
     }
 
     /**
@@ -49,12 +49,12 @@ final class ProtectionPolicyTest extends TestCase
     {
         $policy = $this->policy(['protect/min_active_admins' => '2']);
 
-        self::assertNull($policy->blockDeactivation($this->candidate(), 3));
-        self::assertSame(
+        $this->assertNull($policy->blockDeactivation($this->candidate(), 3));
+        $this->assertSame(
             ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS,
             $policy->blockDeactivation($this->candidate(), 2)
         );
-        self::assertSame(
+        $this->assertSame(
             ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS,
             $policy->blockDeactivation($this->candidate(), 1)
         );
@@ -67,7 +67,7 @@ final class ProtectionPolicyTest extends TestCase
     {
         $policy = $this->policy(['protect/min_active_admins' => '0']);
 
-        self::assertSame(
+        $this->assertSame(
             ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS,
             $policy->blockDeactivation($this->candidate(), 1)
         );
@@ -81,7 +81,7 @@ final class ProtectionPolicyTest extends TestCase
     {
         $policy = $this->policy(['protect/min_active_admins' => '50']);
 
-        self::assertNull($policy->blockDeletion($this->candidate(active: false)));
+        $this->assertNull($policy->blockDeletion($this->candidate(active: false)));
     }
 
     /**
@@ -89,12 +89,12 @@ final class ProtectionPolicyTest extends TestCase
      */
     public function testAnAccountReactivatedSinceSelectionIsNotDeleted(): void
     {
-        self::assertNotNull($this->policy()->blockDeletion($this->candidate(active: true)));
+        $this->assertNotNull($this->policy()->blockDeletion($this->candidate(active: true)));
     }
 
     public function testAnAlreadyInactiveAccountIsNotDeactivatedAgain(): void
     {
-        self::assertSame(
+        $this->assertSame(
             ProtectionPolicy::REASON_ALREADY_INACTIVE,
             $this->policy()->blockDeactivation($this->candidate(active: false), 10)
         );

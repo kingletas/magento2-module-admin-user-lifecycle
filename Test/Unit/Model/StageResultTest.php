@@ -11,7 +11,7 @@ use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\StageResult;
 use PHPUnit\Framework\TestCase;
 
-final class StageResultTest extends TestCase
+class StageResultTest extends TestCase
 {
     /**
      * Nothing due and everything due but protected are different answers, not
@@ -28,10 +28,10 @@ final class StageResultTest extends TestCase
             11
         );
 
-        self::assertFalse($result->hasChanges());
-        self::assertCount(2, $result->getSkipped());
-        self::assertSame(11, $result->getExamined());
-        self::assertSame('deactivate: 11 examined, 0 acted on, 2 protected, 0 failed', $result->summarise());
+        $this->assertFalse($result->hasChanges());
+        $this->assertCount(2, $result->getSkipped());
+        $this->assertSame(11, $result->getExamined());
+        $this->assertSame('deactivate: 11 examined, 0 acted on, 2 protected, 0 failed', $result->summarise());
     }
 
     /**
@@ -50,10 +50,10 @@ final class StageResultTest extends TestCase
             0
         );
 
-        self::assertFalse($disabled->isEnabled());
-        self::assertTrue($quiet->isEnabled());
-        self::assertSame('delete: disabled', $disabled->summarise());
-        self::assertSame('delete: 0 examined, 0 acted on, 0 protected, 0 failed', $quiet->summarise());
+        $this->assertFalse($disabled->isEnabled());
+        $this->assertTrue($quiet->isEnabled());
+        $this->assertSame('delete: disabled', $disabled->summarise());
+        $this->assertSame('delete: 0 examined, 0 acted on, 0 protected, 0 failed', $quiet->summarise());
     }
 
     public function testAllEntriesCoversEveryOutcome(): void
@@ -67,9 +67,9 @@ final class StageResultTest extends TestCase
             3
         );
 
-        self::assertCount(3, $result->getAllEntries());
-        self::assertTrue($result->hasChanges());
-        self::assertTrue($result->hasFailures());
+        $this->assertCount(3, $result->getAllEntries());
+        $this->assertTrue($result->hasChanges());
+        $this->assertTrue($result->hasFailures());
     }
 
     private function entry(string $action): JournalEntry

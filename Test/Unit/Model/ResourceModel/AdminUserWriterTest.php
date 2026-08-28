@@ -16,7 +16,7 @@ use Magento\User\Model\UserFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-final class AdminUserWriterTest extends TestCase
+class AdminUserWriterTest extends TestCase
 {
     private AdapterInterface&MockObject $connection;
     private UserResource&MockObject $userResource;
@@ -42,7 +42,7 @@ final class AdminUserWriterTest extends TestCase
      */
     public function testDeactivationIsConditionalOnTheAccountStillBeingActive(): void
     {
-        $this->connection->expects(self::once())
+        $this->connection->expects($this->once())
             ->method('update')
             ->with(
                 'admin_user',
@@ -51,22 +51,22 @@ final class AdminUserWriterTest extends TestCase
             )
             ->willReturn(1);
 
-        self::assertTrue($this->writer->deactivate(12));
+        $this->assertTrue($this->writer->deactivate(12));
     }
 
     public function testDeactivationReportsFailureWhenNoRowMatched(): void
     {
         $this->connection->method('update')->willReturn(0);
 
-        self::assertFalse($this->writer->deactivate(12));
+        $this->assertFalse($this->writer->deactivate(12));
     }
 
     public function testAnInvalidUserIdIsRefusedWithoutTouchingTheDatabase(): void
     {
-        $this->connection->expects(self::never())->method('update');
+        $this->connection->expects($this->never())->method('update');
 
-        self::assertFalse($this->writer->deactivate(0));
-        self::assertFalse($this->writer->delete(-1));
+        $this->assertFalse($this->writer->deactivate(0));
+        $this->assertFalse($this->writer->delete(-1));
     }
 
     /**
@@ -80,10 +80,10 @@ final class AdminUserWriterTest extends TestCase
         $user->method('getIsActive')->willReturn(0);
 
         $this->userFactory->method('create')->willReturn($user);
-        $this->userResource->expects(self::once())->method('load')->with($user, 12);
-        $this->userResource->expects(self::once())->method('delete')->with($user);
+        $this->userResource->expects($this->once())->method('load')->with($user, 12);
+        $this->userResource->expects($this->once())->method('delete')->with($user);
 
-        self::assertTrue($this->writer->delete(12));
+        $this->assertTrue($this->writer->delete(12));
     }
 
     /**
@@ -96,9 +96,9 @@ final class AdminUserWriterTest extends TestCase
         $user->method('getIsActive')->willReturn(1);
 
         $this->userFactory->method('create')->willReturn($user);
-        $this->userResource->expects(self::never())->method('delete');
+        $this->userResource->expects($this->never())->method('delete');
 
-        self::assertFalse($this->writer->delete(12));
+        $this->assertFalse($this->writer->delete(12));
     }
 
     public function testAnAccountThatNoLongerExistsIsNotDeleted(): void
@@ -107,9 +107,9 @@ final class AdminUserWriterTest extends TestCase
         $user->method('getId')->willReturn(null);
 
         $this->userFactory->method('create')->willReturn($user);
-        $this->userResource->expects(self::never())->method('delete');
+        $this->userResource->expects($this->never())->method('delete');
 
-        self::assertFalse($this->writer->delete(12));
+        $this->assertFalse($this->writer->delete(12));
     }
 
     /**
@@ -126,7 +126,7 @@ final class AdminUserWriterTest extends TestCase
         $second->method('getId')->willReturn(2);
         $second->method('getIsActive')->willReturn(0);
 
-        $this->userFactory->expects(self::exactly(2))
+        $this->userFactory->expects($this->exactly(2))
             ->method('create')
             ->willReturnOnConsecutiveCalls($first, $second);
 

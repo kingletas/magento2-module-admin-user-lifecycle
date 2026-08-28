@@ -15,7 +15,7 @@ use Commerce\AdminUserLifecycle\Model\JournalEntry;
  * The journal in an array, including the rule that dry-run entries do not count
  * as evidence of a real deactivation.
  */
-final class InMemoryJournal implements LifecycleJournalInterface, JournalQueryInterface
+class InMemoryJournal implements LifecycleJournalInterface, JournalQueryInterface
 {
     private int $nextEntryId = 1;
 

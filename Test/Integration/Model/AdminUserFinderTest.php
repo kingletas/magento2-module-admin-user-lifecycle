@@ -46,7 +46,7 @@ class AdminUserFinderTest extends TestCase
 
         $found = $this->finder->findDormant(90 * self::DAY, 30 * self::DAY, time(), 100, 0);
 
-        self::assertContains($userId, $this->idsOf($found));
+        $this->assertContains($userId, $this->idsOf($found));
     }
 
     /**
@@ -59,7 +59,7 @@ class AdminUserFinderTest extends TestCase
 
         $found = $this->finder->findDormant(90 * self::DAY, 30 * self::DAY, time(), 100, 0);
 
-        self::assertNotContains($userId, $this->idsOf($found));
+        $this->assertNotContains($userId, $this->idsOf($found));
     }
 
     public function testAnAccountThatSignedInRecentlyIsNotFound(): void
@@ -68,7 +68,7 @@ class AdminUserFinderTest extends TestCase
 
         $found = $this->finder->findDormant(90 * self::DAY, 30 * self::DAY, time(), 100, 0);
 
-        self::assertNotContains($userId, $this->idsOf($found));
+        $this->assertNotContains($userId, $this->idsOf($found));
     }
 
     /**
@@ -98,8 +98,8 @@ class AdminUserFinderTest extends TestCase
             }
         }
 
-        self::assertSame(array_values(array_unique($seen)), $seen, 'No row may be visited twice.');
-        self::assertEmpty(array_diff($ids, $seen), 'Every inserted row must be visited.');
+        $this->assertSame(array_values(array_unique($seen)), $seen, 'No row may be visited twice.');
+        $this->assertEmpty(array_diff($ids, $seen), 'Every inserted row must be visited.');
     }
 
     public function testCountActiveOnlyCountsEnabledAccounts(): void
@@ -109,7 +109,7 @@ class AdminUserFinderTest extends TestCase
         $this->insertUser('commerce_active', time(), time(), 1);
         $this->insertUser('commerce_inactive', time(), time(), 0);
 
-        self::assertSame($before + 1, $this->finder->countActive());
+        $this->assertSame($before + 1, $this->finder->countActive());
     }
 
     /**

@@ -10,7 +10,7 @@ namespace Commerce\AdminUserLifecycle\Test\Unit\Model;
 use Commerce\AdminUserLifecycle\Model\Candidate;
 use PHPUnit\Framework\TestCase;
 
-final class CandidateTest extends TestCase
+class CandidateTest extends TestCase
 {
     private const CREATED = 1_700_000_000;
     private const LOGGED_IN = 1_700_900_000;
@@ -19,8 +19,8 @@ final class CandidateTest extends TestCase
     {
         $candidate = $this->candidate(self::LOGGED_IN);
 
-        self::assertTrue($candidate->hasEverSignedIn());
-        self::assertSame(self::LOGGED_IN, $candidate->getActivityAnchor());
+        $this->assertTrue($candidate->hasEverSignedIn());
+        $this->assertSame(self::LOGGED_IN, $candidate->getActivityAnchor());
     }
 
     /**
@@ -31,15 +31,15 @@ final class CandidateTest extends TestCase
     {
         $candidate = $this->candidate(null);
 
-        self::assertFalse($candidate->hasEverSignedIn());
-        self::assertNull($candidate->getLastLoginAt());
-        self::assertSame(self::CREATED, $candidate->getActivityAnchor());
+        $this->assertFalse($candidate->hasEverSignedIn());
+        $this->assertNull($candidate->getLastLoginAt());
+        $this->assertSame(self::CREATED, $candidate->getActivityAnchor());
     }
 
     public function testTheDisplayNameFallsBackToTheUsername(): void
     {
-        self::assertSame('Ada Lovelace', $this->candidate(null, 'Ada Lovelace')->getName());
-        self::assertSame('adminuser', $this->candidate(null, '')->getName());
+        $this->assertSame('Ada Lovelace', $this->candidate(null, 'Ada Lovelace')->getName());
+        $this->assertSame('adminuser', $this->candidate(null, '')->getName());
     }
 
     private function candidate(?int $lastLogin, string $name = 'Ada Lovelace'): Candidate

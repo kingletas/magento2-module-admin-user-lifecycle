@@ -34,7 +34,7 @@ class JournalPersistenceTest extends TestCase
 
         $this->journal->recordAll([$this->entry(4242, JournalEntry::ACTION_DEACTIVATED, false, $occurredAt)]);
 
-        self::assertSame($occurredAt, $this->journal->getDeactivatedAt([4242])[4242] ?? null);
+        $this->assertSame($occurredAt, $this->journal->getDeactivatedAt([4242])[4242] ?? null);
     }
 
     /**
@@ -62,7 +62,7 @@ class JournalPersistenceTest extends TestCase
     {
         $this->journal->recordAll([$this->entry(4244, JournalEntry::ACTION_DEACTIVATED, true, time() - 1000)]);
 
-        self::assertSame([], $this->journal->getDeactivatedAt([4244]));
+        $this->assertSame([], $this->journal->getDeactivatedAt([4244]));
     }
 
     public function testAdoptionCountsAsADeactivationForTheDeletionClock(): void
@@ -71,7 +71,7 @@ class JournalPersistenceTest extends TestCase
 
         $this->journal->recordAll([$this->entry(4245, JournalEntry::ACTION_ADOPTED, false, $occurredAt)]);
 
-        self::assertSame($occurredAt, $this->journal->getDeactivatedAt([4245])[4245] ?? null);
+        $this->assertSame($occurredAt, $this->journal->getDeactivatedAt([4245])[4245] ?? null);
     }
 
     public function testPruningRemovesOnlyEntriesPastTheCutoff(): void
@@ -83,8 +83,8 @@ class JournalPersistenceTest extends TestCase
 
         $this->journal->prune(time() - 50000);
 
-        self::assertSame([], $this->journal->getDeactivatedAt([4246]));
-        self::assertNotEmpty($this->journal->getDeactivatedAt([4247]));
+        $this->assertSame([], $this->journal->getDeactivatedAt([4246]));
+        $this->assertNotEmpty($this->journal->getDeactivatedAt([4247]));
     }
 
     private function entry(int $userId, string $action, bool $dryRun, int $occurredAt): JournalEntry

@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use RuntimeException;
 
-final class UserEmailNotifierTest extends TestCase
+class UserEmailNotifierTest extends TestCase
 {
     private const NOW = 1_760_000_000;
 
@@ -61,10 +61,10 @@ final class UserEmailNotifierTest extends TestCase
     {
         $dueAt = self::NOW + (5 * 86400);
 
-        self::assertTrue($this->notifier->warn($this->candidate('ada@example.com'), $dueAt));
-        self::assertSame('dormant.user', $this->templateVars['username']);
-        self::assertSame('Ada Lovelace', $this->templateVars['name']);
-        self::assertSame(gmdate('Y-m-d', $dueAt), $this->templateVars['deactivate_at']);
+        $this->assertTrue($this->notifier->warn($this->candidate('ada@example.com'), $dueAt));
+        $this->assertSame('dormant.user', $this->templateVars['username']);
+        $this->assertSame('Ada Lovelace', $this->templateVars['name']);
+        $this->assertSame(gmdate('Y-m-d', $dueAt), $this->templateVars['deactivate_at']);
     }
 
     /**
@@ -74,9 +74,9 @@ final class UserEmailNotifierTest extends TestCase
     #[DataProvider('unusableAddressProvider')]
     public function testAnUnusableAddressIsRefusedWithoutBuildingATransport(string $email): void
     {
-        $this->transportBuilder->expects(self::never())->method('getTransport');
+        $this->transportBuilder->expects($this->never())->method('getTransport');
 
-        self::assertFalse($this->notifier->warn($this->candidate($email), self::NOW + 86400));
+        $this->assertFalse($this->notifier->warn($this->candidate($email), self::NOW + 86400));
     }
 
     /**
@@ -95,14 +95,14 @@ final class UserEmailNotifierTest extends TestCase
     {
         $this->transport->method('sendMessage')->willThrowException(new RuntimeException('SMTP refused'));
 
-        self::assertFalse($this->notifier->warn($this->candidate('ada@example.com'), self::NOW + 86400));
+        $this->assertFalse($this->notifier->warn($this->candidate('ada@example.com'), self::NOW + 86400));
     }
 
     public function testDaysRemainingNeverGoNegative(): void
     {
         $this->notifier->warn($this->candidate('ada@example.com'), self::NOW - 100000);
 
-        self::assertSame(0, $this->templateVars['days_left']);
+        $this->assertSame(0, $this->templateVars['days_left']);
     }
 
     private function candidate(string $email): Candidate

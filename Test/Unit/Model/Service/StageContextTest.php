@@ -13,7 +13,7 @@ use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-final class StageContextTest extends TestCase
+class StageContextTest extends TestCase
 {
     public function testItHandsBackExactlyWhatItWasGiven(): void
     {
@@ -23,9 +23,9 @@ final class StageContextTest extends TestCase
 
         $context = new StageContext($config, $logger, $mapper);
 
-        self::assertSame($config, $context->config);
-        self::assertSame($logger, $context->logger);
-        self::assertSame($mapper, $context->entryMapper);
+        $this->assertSame($config, $context->config);
+        $this->assertSame($logger, $context->logger);
+        $this->assertSame($mapper, $context->entryMapper);
     }
 
     /**

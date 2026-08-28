@@ -15,7 +15,7 @@ use Magento\Framework\DataObject;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-final class AdminRolesTest extends TestCase
+class AdminRolesTest extends TestCase
 {
     private Collection&MockObject $collection;
     private AdminRoles $source;
@@ -39,7 +39,7 @@ final class AdminRolesTest extends TestCase
             $this->role(7, 'Content Editors'),
         ]));
 
-        self::assertSame(
+        $this->assertSame(
             [
                 ['value' => 3, 'label' => 'Administrators'],
                 ['value' => 7, 'label' => 'Content Editors'],
@@ -53,7 +53,7 @@ final class AdminRolesTest extends TestCase
      */
     public function testOnlyRoleGroupsAreQueried(): void
     {
-        $this->collection->expects(self::once())
+        $this->collection->expects($this->once())
             ->method('addFieldToFilter')
             ->with('role_type', Group::ROLE_TYPE)
             ->willReturnSelf();
@@ -69,7 +69,7 @@ final class AdminRolesTest extends TestCase
      */
     public function testTheCollectionIsOnlyLoadedOnce(): void
     {
-        $this->collection->expects(self::once())
+        $this->collection->expects($this->once())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator([$this->role(3, 'Administrators')]));
 

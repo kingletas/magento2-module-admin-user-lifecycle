@@ -13,7 +13,7 @@ use RuntimeException;
 /**
  * Records what the module announced to anything listening from outside it.
  */
-final class RecordingEventManager implements ManagerInterface
+class RecordingEventManager implements ManagerInterface
 {
     /** @var array<int, array{name: string, data: array}> */
     public array $dispatched = [];

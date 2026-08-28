@@ -16,7 +16,7 @@ use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use Magento\Framework\Exception\InputException;
 use PHPUnit\Framework\TestCase;
 
-final class JournalReaderTest extends TestCase
+class JournalReaderTest extends TestCase
 {
     private InMemoryJournal $journal;
 
@@ -35,11 +35,11 @@ final class JournalReaderTest extends TestCase
 
         $entries = $this->reader()->getEntries();
 
-        self::assertCount(2, $entries);
-        self::assertSame(JournalEntry::ACTION_WARNED, $entries[0]->getAction());
-        self::assertSame(JournalEntry::ACTION_DEACTIVATED, $entries[1]->getAction());
-        self::assertSame(1, $entries[0]->getUserId());
-        self::assertSame('user1', $entries[0]->getUsername());
+        $this->assertCount(2, $entries);
+        $this->assertSame(JournalEntry::ACTION_WARNED, $entries[0]->getAction());
+        $this->assertSame(JournalEntry::ACTION_DEACTIVATED, $entries[1]->getAction());
+        $this->assertSame(1, $entries[0]->getUserId());
+        $this->assertSame('user1', $entries[0]->getUsername());
     }
 
     /**
@@ -50,8 +50,8 @@ final class JournalReaderTest extends TestCase
         $this->record(1, JournalEntry::ACTION_DEACTIVATED);
         $this->record(2, JournalEntry::ACTION_DEACTIVATED, dryRun: true);
 
-        self::assertCount(1, $this->reader()->getEntries());
-        self::assertCount(2, $this->reader()->getEntries(includeSimulated: true));
+        $this->assertCount(1, $this->reader()->getEntries());
+        $this->assertCount(2, $this->reader()->getEntries(includeSimulated: true));
     }
 
     public function testEntriesCanBeNarrowedToOneAccount(): void
@@ -61,8 +61,8 @@ final class JournalReaderTest extends TestCase
 
         $entries = $this->reader()->getEntries(userId: 2);
 
-        self::assertCount(1, $entries);
-        self::assertSame(2, $entries[0]->getUserId());
+        $this->assertCount(1, $entries);
+        $this->assertSame(2, $entries[0]->getUserId());
     }
 
     public function testEntriesCanBeNarrowedToOneAction(): void
@@ -72,8 +72,8 @@ final class JournalReaderTest extends TestCase
 
         $entries = $this->reader()->getEntries(action: JournalEntry::ACTION_SKIPPED);
 
-        self::assertCount(1, $entries);
-        self::assertSame(JournalEntry::ACTION_SKIPPED, $entries[0]->getAction());
+        $this->assertCount(1, $entries);
+        $this->assertSame(JournalEntry::ACTION_SKIPPED, $entries[0]->getAction());
     }
 
     /**
@@ -97,8 +97,8 @@ final class JournalReaderTest extends TestCase
             since: gmdate('Y-m-d\TH:i:s\Z', $this->now - (3 * 86400))
         );
 
-        self::assertCount(1, $entries);
-        self::assertSame(2, $entries[0]->getUserId());
+        $this->assertCount(1, $entries);
+        $this->assertSame(2, $entries[0]->getUserId());
     }
 
     public function testADateThisModuleCannotReadIsRefusedRatherThanIgnored(): void
@@ -113,7 +113,7 @@ final class JournalReaderTest extends TestCase
     {
         $this->record(1, JournalEntry::ACTION_WARNED);
 
-        self::assertCount(1, $this->reader()->getEntries(action: '', since: '  '));
+        $this->assertCount(1, $this->reader()->getEntries(action: '', since: '  '));
     }
 
     public function testAPageIsCappedAtTheConfiguredBatchSize(): void
@@ -122,7 +122,7 @@ final class JournalReaderTest extends TestCase
             $this->record($id, JournalEntry::ACTION_WARNED);
         }
 
-        self::assertCount(2, $this->reader(['general/batch_size' => '2'])->getEntries(limit: 100));
+        $this->assertCount(2, $this->reader(['general/batch_size' => '2'])->getEntries(limit: 100));
     }
 
     /**
@@ -137,8 +137,8 @@ final class JournalReaderTest extends TestCase
         $first = $this->reader()->getEntries(limit: 2);
         $second = $this->reader()->getEntries(limit: 2, afterEntryId: $first[1]->getEntryId());
 
-        self::assertSame([1, 2], array_map(static fn ($row): int => $row->getUserId(), $first));
-        self::assertSame([3, 4], array_map(static fn ($row): int => $row->getUserId(), $second));
+        $this->assertSame([1, 2], array_map(static fn ($row): int => $row->getUserId(), $first));
+        $this->assertSame([3, 4], array_map(static fn ($row): int => $row->getUserId(), $second));
     }
 
     /**

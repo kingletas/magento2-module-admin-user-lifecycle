@@ -20,7 +20,7 @@ use Psr\Log\NullLogger;
 /**
  * The paging loop every stage inherits.
  */
-final class AbstractStageTest extends TestCase
+class AbstractStageTest extends TestCase
 {
     public function testItWalksEveryPageUntilOneComesBackShort(): void
     {
@@ -45,8 +45,8 @@ final class AbstractStageTest extends TestCase
             }
         );
 
-        self::assertSame([1, 2, 3, 4, 5, 6, 7], $seen);
-        self::assertSame(7, $examined);
+        $this->assertSame([1, 2, 3, 4, 5, 6, 7], $seen);
+        $this->assertSame(7, $examined);
     }
 
     /**
@@ -69,7 +69,7 @@ final class AbstractStageTest extends TestCase
             }
         );
 
-        self::assertSame([0, 3, 11], $cursors);
+        $this->assertSame([0, 3, 11], $cursors);
     }
 
     /**
@@ -90,8 +90,8 @@ final class AbstractStageTest extends TestCase
             }
         );
 
-        self::assertSame(2, $calls, 'The loop must abandon a fetcher that never advances.');
-        self::assertSame(4, $examined);
+        $this->assertSame(2, $calls, 'The loop must abandon a fetcher that never advances.');
+        $this->assertSame(4, $examined);
     }
 
     public function testAnEmptyFirstPageDoesNoWork(): void
@@ -105,8 +105,8 @@ final class AbstractStageTest extends TestCase
             }
         );
 
-        self::assertSame(0, $examined);
-        self::assertFalse($handled);
+        $this->assertSame(0, $examined);
+        $this->assertFalse($handled);
     }
 
     /**

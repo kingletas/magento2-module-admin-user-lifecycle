@@ -15,7 +15,7 @@ use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-final class PruneJournalTest extends TestCase
+class PruneJournalTest extends TestCase
 {
     private const DAY = 86400;
 
@@ -33,8 +33,8 @@ final class PruneJournalTest extends TestCase
 
         $this->cron(['report/journal_retention_days' => '730'])->execute();
 
-        self::assertSame(1, $this->journal->pruned);
-        self::assertCount(1, $this->journal->entries);
+        $this->assertSame(1, $this->journal->pruned);
+        $this->assertCount(1, $this->journal->entries);
     }
 
     /**
@@ -49,7 +49,7 @@ final class PruneJournalTest extends TestCase
             'report/journal_retention_days' => '30',
         ])->execute();
 
-        self::assertSame(0, $this->journal->pruned, 'A 200-day-old deactivation still authorises a deletion.');
+        $this->assertSame(0, $this->journal->pruned, 'A 200-day-old deactivation still authorises a deletion.');
     }
 
     public function testAFailingPruneDoesNotFailTheCronJob(): void

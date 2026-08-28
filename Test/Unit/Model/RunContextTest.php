@@ -11,16 +11,16 @@ use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\RunContext;
 use PHPUnit\Framework\TestCase;
 
-final class RunContextTest extends TestCase
+class RunContextTest extends TestCase
 {
     public function testItCarriesTheClockRatherThanReadingIt(): void
     {
         $context = new RunContext(JournalEntry::ACTOR_CRON, false, 1_234_567_890, 4);
 
-        self::assertSame(JournalEntry::ACTOR_CRON, $context->getActor());
-        self::assertFalse($context->isDryRun());
-        self::assertSame(1_234_567_890, $context->getNow());
-        self::assertSame(4, $context->getStoreId());
+        $this->assertSame(JournalEntry::ACTOR_CRON, $context->getActor());
+        $this->assertFalse($context->isDryRun());
+        $this->assertSame(1_234_567_890, $context->getNow());
+        $this->assertSame(4, $context->getStoreId());
     }
 
     /**
@@ -30,7 +30,7 @@ final class RunContextTest extends TestCase
     {
         $context = new RunContext(JournalEntry::ACTOR_CLI, true, 1_000);
 
-        self::assertSame($context->getNow(), $context->getNow());
-        self::assertSame(1_000, $context->getNow());
+        $this->assertSame($context->getNow(), $context->getNow());
+        $this->assertSame(1_000, $context->getNow());
     }
 }

@@ -20,7 +20,7 @@ use ReflectionClass;
 /**
  * The names the JSON actually carries.
  */
-final class FieldNamingTest extends TestCase
+class FieldNamingTest extends TestCase
 {
     /**
      * @return array<string, array{0: class-string}>
@@ -53,7 +53,7 @@ final class FieldNamingTest extends TestCase
                 continue;
             }
 
-            self::assertContains(
+            $this->assertContains(
                 $field,
                 $declared,
                 sprintf(
@@ -88,7 +88,7 @@ final class FieldNamingTest extends TestCase
         }
 
         foreach ($reflection->getConstants() as $name => $value) {
-            self::assertContains(
+            $this->assertContains(
                 $value,
                 $emitted,
                 sprintf('%s::%s is "%s", which nothing emits.', $reflection->getShortName(), $name, $value)
@@ -115,11 +115,11 @@ final class FieldNamingTest extends TestCase
 
             $docBlock = $method->getDocComment();
 
-            self::assertIsString(
+            $this->assertIsString(
                 $docBlock,
                 sprintf('%s::%s() has no docblock at all.', $reflection->getShortName(), $method->getName())
             );
-            self::assertMatchesRegularExpression(
+            $this->assertMatchesRegularExpression(
                 '/@return\s+\S+\s+\S/',
                 $docBlock,
                 sprintf(

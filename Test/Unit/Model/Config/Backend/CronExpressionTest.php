@@ -25,14 +25,14 @@ use PHPUnit\Framework\TestCase;
  * Magento's schedule matcher never matches a malformed expression rather than
  * erroring.
  */
-final class CronExpressionTest extends TestCase
+class CronExpressionTest extends TestCase
 {
     #[DataProvider('validProvider')]
     public function testAValidExpressionIsAccepted(string $expression): void
     {
         $model = $this->model($expression);
 
-        self::assertSame($model, $model->beforeSave());
+        $this->assertSame($model, $model->beforeSave());
     }
 
     /**
@@ -78,7 +78,7 @@ final class CronExpressionTest extends TestCase
         $model = $this->model('  0 2 * * *  ');
         $model->beforeSave();
 
-        self::assertSame('0 2 * * *', $model->getValue());
+        $this->assertSame('0 2 * * *', $model->getValue());
     }
 
     private function model(string $value): CronExpression

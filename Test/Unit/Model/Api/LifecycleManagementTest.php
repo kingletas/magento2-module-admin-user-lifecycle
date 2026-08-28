@@ -33,7 +33,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-final class LifecycleManagementTest extends TestCase
+class LifecycleManagementTest extends TestCase
 {
     private const DAY = 86400;
 
@@ -86,9 +86,9 @@ final class LifecycleManagementTest extends TestCase
 
         $result = $this->management(['general/enabled' => '0'])->deactivate(1);
 
-        self::assertTrue($result->isDryRun());
-        self::assertFalse($result->isApplied());
-        self::assertSame([], $this->writer->deactivated);
+        $this->assertTrue($result->isDryRun());
+        $this->assertFalse($result->isApplied());
+        $this->assertSame([], $this->writer->deactivated);
     }
 
     /**
@@ -121,12 +121,12 @@ final class LifecycleManagementTest extends TestCase
 
         $result = $this->management()->deactivate(1, dryRun: false);
 
-        self::assertTrue($result->isApplied());
-        self::assertSame(JournalEntry::ACTION_DEACTIVATED, $result->getAction());
-        self::assertSame([1], $this->writer->deactivated);
-        self::assertCount(1, $this->journal->entries);
-        self::assertSame(JournalEntry::ACTOR_API, $this->journal->entries[0]->getActor());
-        self::assertSame(
+        $this->assertTrue($result->isApplied());
+        $this->assertSame(JournalEntry::ACTION_DEACTIVATED, $result->getAction());
+        $this->assertSame([1], $this->writer->deactivated);
+        $this->assertCount(1, $this->journal->entries);
+        $this->assertSame(JournalEntry::ACTOR_API, $this->journal->entries[0]->getActor());
+        $this->assertSame(
             [LifecycleEventDispatcher::EVENT_DEACTIVATED],
             $this->events->names()
         );
@@ -143,10 +143,10 @@ final class LifecycleManagementTest extends TestCase
 
         $result = $this->management(['protect/min_active_admins' => '2'])->deactivate(1, dryRun: false);
 
-        self::assertFalse($result->isApplied());
-        self::assertSame(JournalEntry::ACTION_SKIPPED, $result->getAction());
-        self::assertSame(ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS, $result->getReason());
-        self::assertSame([], $this->writer->deactivated);
+        $this->assertFalse($result->isApplied());
+        $this->assertSame(JournalEntry::ACTION_SKIPPED, $result->getAction());
+        $this->assertSame(ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS, $result->getReason());
+        $this->assertSame([], $this->writer->deactivated);
     }
 
     public function testAnAccountThatIsNotDormantEnoughIsRefusedRatherThanRetiredOnDemand(): void
@@ -155,9 +155,9 @@ final class LifecycleManagementTest extends TestCase
 
         $result = $this->management()->deactivate(1, dryRun: false);
 
-        self::assertFalse($result->isApplied());
-        self::assertSame('not dormant long enough', $result->getReason());
-        self::assertSame([], $this->writer->deactivated);
+        $this->assertFalse($result->isApplied());
+        $this->assertSame('not dormant long enough', $result->getReason());
+        $this->assertSame([], $this->writer->deactivated);
     }
 
     /**
@@ -170,9 +170,9 @@ final class LifecycleManagementTest extends TestCase
 
         $this->management()->deactivate(1, dryRun: false);
 
-        self::assertCount(1, $this->journal->entries);
-        self::assertSame(JournalEntry::ACTION_SKIPPED, $this->journal->entries[0]->getAction());
-        self::assertSame([], $this->events->dispatched);
+        $this->assertCount(1, $this->journal->entries);
+        $this->assertSame(JournalEntry::ACTION_SKIPPED, $this->journal->entries[0]->getAction());
+        $this->assertSame([], $this->events->dispatched);
     }
 
     public function testASimulatedDeactivationChangesNothingAndTellsNobody(): void
@@ -181,12 +181,12 @@ final class LifecycleManagementTest extends TestCase
 
         $result = $this->management()->deactivate(1);
 
-        self::assertFalse($result->isApplied());
-        self::assertTrue($result->isDryRun());
-        self::assertSame(JournalEntry::ACTION_DEACTIVATED, $result->getAction());
-        self::assertSame([], $this->writer->deactivated);
-        self::assertSame([], $this->events->dispatched);
-        self::assertTrue($this->journal->entries[0]->isDryRun());
+        $this->assertFalse($result->isApplied());
+        $this->assertTrue($result->isDryRun());
+        $this->assertSame(JournalEntry::ACTION_DEACTIVATED, $result->getAction());
+        $this->assertSame([], $this->writer->deactivated);
+        $this->assertSame([], $this->events->dispatched);
+        $this->assertTrue($this->journal->entries[0]->isDryRun());
     }
 
     // --- deletion -----------------------------------------------------------
@@ -197,10 +197,10 @@ final class LifecycleManagementTest extends TestCase
 
         $result = $this->management()->delete(1, dryRun: false);
 
-        self::assertSame(JournalEntry::ACTION_ADOPTED, $result->getAction());
-        self::assertTrue($result->isApplied(), 'The deletion clock now exists, which is a change.');
-        self::assertSame([], $this->writer->deleted);
-        self::assertSame([], $this->events->names(), 'Nothing was deleted, so nothing is announced.');
+        $this->assertSame(JournalEntry::ACTION_ADOPTED, $result->getAction());
+        $this->assertTrue($result->isApplied(), 'The deletion clock now exists, which is a change.');
+        $this->assertSame([], $this->writer->deleted);
+        $this->assertSame([], $this->events->names(), 'Nothing was deleted, so nothing is announced.');
     }
 
     public function testAnAccountDeactivatedLongEnoughAgoIsDeletedAndAnnounced(): void
@@ -210,9 +210,9 @@ final class LifecycleManagementTest extends TestCase
 
         $result = $this->management()->delete(1, dryRun: false);
 
-        self::assertTrue($result->isApplied());
-        self::assertSame([1], $this->writer->deleted);
-        self::assertSame([LifecycleEventDispatcher::EVENT_DELETED], $this->events->names());
+        $this->assertTrue($result->isApplied());
+        $this->assertSame([1], $this->writer->deleted);
+        $this->assertSame([LifecycleEventDispatcher::EVENT_DELETED], $this->events->names());
     }
 
     public function testAnAccountStillInsideTheDeletionWindowIsRefusedWithTheDateItFallsDue(): void
@@ -222,9 +222,9 @@ final class LifecycleManagementTest extends TestCase
 
         $result = $this->management()->delete(1, dryRun: false);
 
-        self::assertFalse($result->isApplied());
-        self::assertStringContainsString('not due until', $result->getReason());
-        self::assertSame([], $this->writer->deleted);
+        $this->assertFalse($result->isApplied());
+        $this->assertStringContainsString('not due until', $result->getReason());
+        $this->assertSame([], $this->writer->deleted);
     }
 
     // --- warning ------------------------------------------------------------
@@ -237,10 +237,10 @@ final class LifecycleManagementTest extends TestCase
         $first = $management->warn(1, dryRun: false);
         $second = $management->warn(1, dryRun: false);
 
-        self::assertTrue($first->isApplied());
-        self::assertFalse($second->isApplied());
-        self::assertSame('already warned about this deactivation', $second->getReason());
-        self::assertCount(1, $this->notifier->warned);
+        $this->assertTrue($first->isApplied());
+        $this->assertFalse($second->isApplied());
+        $this->assertSame('already warned about this deactivation', $second->getReason());
+        $this->assertCount(1, $this->notifier->warned);
     }
 
     public function testAnAccountNowhereNearDeactivationIsNotWarned(): void
@@ -249,9 +249,9 @@ final class LifecycleManagementTest extends TestCase
 
         $result = $this->management()->warn(1, dryRun: false);
 
-        self::assertFalse($result->isApplied());
-        self::assertSame('not inside the notice window', $result->getReason());
-        self::assertSame([], $this->notifier->warned);
+        $this->assertFalse($result->isApplied());
+        $this->assertSame('not inside the notice window', $result->getReason());
+        $this->assertSame([], $this->notifier->warned);
     }
 
     // --- the whole pass -----------------------------------------------------
@@ -262,11 +262,11 @@ final class LifecycleManagementTest extends TestCase
 
         $report = $this->management()->run(dryRun: false);
 
-        self::assertSame(JournalEntry::ACTOR_API, $report->getActor());
-        self::assertFalse($report->isDryRun());
-        self::assertTrue($report->hasChanges());
-        self::assertSame([1], $this->writer->deactivated);
-        self::assertSame(JournalEntry::ACTOR_API, $this->journal->entries[0]->getActor());
+        $this->assertSame(JournalEntry::ACTOR_API, $report->getActor());
+        $this->assertFalse($report->isDryRun());
+        $this->assertTrue($report->hasChanges());
+        $this->assertSame([1], $this->writer->deactivated);
+        $this->assertSame(JournalEntry::ACTOR_API, $this->journal->entries[0]->getActor());
     }
 
     public function testALivePassIsRefusedWhileTheModuleIsSwitchedOff(): void
@@ -282,9 +282,9 @@ final class LifecycleManagementTest extends TestCase
 
         $stages = $this->management()->run()->getStages();
 
-        self::assertSame(['deactivate'], array_map(static fn ($stage): string => $stage->getStage(), $stages));
-        self::assertTrue($stages[0]->isEnabled());
-        self::assertSame(1, $stages[0]->getActed());
+        $this->assertSame(['deactivate'], array_map(static fn ($stage): string => $stage->getStage(), $stages));
+        $this->assertTrue($stages[0]->isEnabled());
+        $this->assertSame(1, $stages[0]->getActed());
     }
 
     // --- recording ----------------------------------------------------------
@@ -299,8 +299,8 @@ final class LifecycleManagementTest extends TestCase
 
         $result = $this->management()->deactivate(1, dryRun: false);
 
-        self::assertTrue($result->isApplied());
-        self::assertSame([1], $this->writer->deactivated);
+        $this->assertTrue($result->isApplied());
+        $this->assertSame([1], $this->writer->deactivated);
     }
 
     /**

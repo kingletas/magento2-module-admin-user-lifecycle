@@ -14,7 +14,7 @@ use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingEventManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-final class LifecycleEventDispatcherTest extends TestCase
+class LifecycleEventDispatcherTest extends TestCase
 {
     private RecordingEventManager $events;
 
@@ -31,7 +31,7 @@ final class LifecycleEventDispatcherTest extends TestCase
             $this->entry(JournalEntry::ACTION_DELETED),
         ]);
 
-        self::assertSame(
+        $this->assertSame(
             [
                 LifecycleEventDispatcher::EVENT_WARNED,
                 LifecycleEventDispatcher::EVENT_DEACTIVATED,
@@ -52,7 +52,7 @@ final class LifecycleEventDispatcherTest extends TestCase
         ]);
         $this->dispatcher()->announceRun($this->context(dryRun: true), [JournalEntry::ACTION_DELETED => 1], 4);
 
-        self::assertSame([], $this->events->dispatched);
+        $this->assertSame([], $this->events->dispatched);
     }
 
     /**
@@ -67,7 +67,7 @@ final class LifecycleEventDispatcherTest extends TestCase
             $this->entry(JournalEntry::ACTION_ADOPTED),
         ]);
 
-        self::assertSame([], $this->events->dispatched);
+        $this->assertSame([], $this->events->dispatched);
     }
 
     public function testThePayloadIsFlatScalarsWithTheDateSpelledOutInUtc(): void
@@ -76,7 +76,7 @@ final class LifecycleEventDispatcherTest extends TestCase
 
         $payload = $this->events->payloadsFor(LifecycleEventDispatcher::EVENT_DEACTIVATED)[0];
 
-        self::assertSame(
+        $this->assertSame(
             [
                 'user_id' => 7,
                 'username' => 'dormant.user',
@@ -90,7 +90,7 @@ final class LifecycleEventDispatcherTest extends TestCase
         );
 
         foreach ($payload as $value) {
-            self::assertIsScalar($value, 'A subscriber outside the store receives this as JSON.');
+            $this->assertIsScalar($value, 'A subscriber outside the store receives this as JSON.');
         }
     }
 
@@ -104,10 +104,10 @@ final class LifecycleEventDispatcherTest extends TestCase
 
         $payload = $this->events->payloadsFor(LifecycleEventDispatcher::EVENT_RUN_COMPLETED)[0];
 
-        self::assertSame('api', $payload['actor']);
-        self::assertSame(4, $payload['active_admins_before']);
-        self::assertSame(0, $payload['deactivated']);
-        self::assertSame(0, $payload['failed']);
+        $this->assertSame('api', $payload['actor']);
+        $this->assertSame(4, $payload['active_admins_before']);
+        $this->assertSame(0, $payload['deactivated']);
+        $this->assertSame(0, $payload['failed']);
     }
 
     public function testTheRunSummaryCountsEveryActionTheJournalRecorded(): void
@@ -124,10 +124,10 @@ final class LifecycleEventDispatcherTest extends TestCase
 
         $payload = $this->events->payloadsFor(LifecycleEventDispatcher::EVENT_RUN_COMPLETED)[0];
 
-        self::assertSame(3, $payload['warned']);
-        self::assertSame(2, $payload['deactivated']);
-        self::assertSame(1, $payload['skipped']);
-        self::assertSame(0, $payload['deleted']);
+        $this->assertSame(3, $payload['warned']);
+        $this->assertSame(2, $payload['deactivated']);
+        $this->assertSame(1, $payload['skipped']);
+        $this->assertSame(0, $payload['deleted']);
     }
 
     /**
@@ -143,7 +143,7 @@ final class LifecycleEventDispatcherTest extends TestCase
             $this->entry(JournalEntry::ACTION_DEACTIVATED),
         ]);
 
-        self::assertSame([LifecycleEventDispatcher::EVENT_DEACTIVATED], $this->events->names());
+        $this->assertSame([LifecycleEventDispatcher::EVENT_DEACTIVATED], $this->events->names());
     }
 
     private function dispatcher(): LifecycleEventDispatcher

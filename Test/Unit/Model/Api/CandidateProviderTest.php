@@ -21,7 +21,7 @@ use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use Magento\Framework\Exception\InputException;
 use PHPUnit\Framework\TestCase;
 
-final class CandidateProviderTest extends TestCase
+class CandidateProviderTest extends TestCase
 {
     private const DAY = 86400;
 
@@ -64,13 +64,13 @@ final class CandidateProviderTest extends TestCase
 
         $rows = $this->provider()->getList(LifecycleCandidateProviderInterface::STAGE_DEACTIVATE);
 
-        self::assertCount(1, $rows);
-        self::assertSame(1, $rows[0]->getUserId());
-        self::assertSame('deactivate', $rows[0]->getStage());
-        self::assertTrue($rows[0]->isDue());
-        self::assertNull($rows[0]->getBlockedReason());
-        self::assertSame(200, $rows[0]->getDormantDays());
-        self::assertNotNull($rows[0]->getDueAt());
+        $this->assertCount(1, $rows);
+        $this->assertSame(1, $rows[0]->getUserId());
+        $this->assertSame('deactivate', $rows[0]->getStage());
+        $this->assertTrue($rows[0]->isDue());
+        $this->assertNull($rows[0]->getBlockedReason());
+        $this->assertSame(200, $rows[0]->getDormantDays());
+        $this->assertNotNull($rows[0]->getDueAt());
     }
 
     /**
@@ -84,8 +84,8 @@ final class CandidateProviderTest extends TestCase
         $rows = $this->provider(['protect/usernames' => 'break-glass'])
             ->getList(LifecycleCandidateProviderInterface::STAGE_DEACTIVATE);
 
-        self::assertTrue($rows[0]->isDue());
-        self::assertSame(ProtectionPolicy::REASON_PROTECTED_USERNAME, $rows[0]->getBlockedReason());
+        $this->assertTrue($rows[0]->isDue());
+        $this->assertSame(ProtectionPolicy::REASON_PROTECTED_USERNAME, $rows[0]->getBlockedReason());
     }
 
     public function testTheAdministratorFloorShowsUpAsAReasonBeforeAnybodyActsOnIt(): void
@@ -96,9 +96,9 @@ final class CandidateProviderTest extends TestCase
         $rows = $this->provider(['protect/min_active_admins' => '2'])
             ->getList(LifecycleCandidateProviderInterface::STAGE_DEACTIVATE);
 
-        self::assertCount(2, $rows);
-        self::assertSame(ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS, $rows[0]->getBlockedReason());
-        self::assertSame(ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS, $rows[1]->getBlockedReason());
+        $this->assertCount(2, $rows);
+        $this->assertSame(ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS, $rows[0]->getBlockedReason());
+        $this->assertSame(ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS, $rows[1]->getBlockedReason());
     }
 
     /**
@@ -119,8 +119,8 @@ final class CandidateProviderTest extends TestCase
             $due[$row->getUserId()] = $row->isDue();
         }
 
-        self::assertTrue($due[1], 'Five days from deactivation, inside a seven-day notice period.');
-        self::assertFalse($due[2], 'Overdue for deactivation, so there is nothing left to warn about.');
+        $this->assertTrue($due[1], 'Five days from deactivation, inside a seven-day notice period.');
+        $this->assertFalse($due[2], 'Overdue for deactivation, so there is nothing left to warn about.');
     }
 
     /**
@@ -133,9 +133,9 @@ final class CandidateProviderTest extends TestCase
 
         $rows = $this->provider()->getList(LifecycleCandidateProviderInterface::STAGE_DELETE);
 
-        self::assertFalse($rows[0]->isDue());
-        self::assertNull($rows[0]->getDueAt());
-        self::assertNull($rows[0]->getDeactivatedAt());
+        $this->assertFalse($rows[0]->isDue());
+        $this->assertNull($rows[0]->getDueAt());
+        $this->assertNull($rows[0]->getDeactivatedAt());
     }
 
     public function testARecordedDeactivationOldEnoughMakesAnAccountDueForDeletion(): void
@@ -145,9 +145,9 @@ final class CandidateProviderTest extends TestCase
 
         $rows = $this->provider()->getList(LifecycleCandidateProviderInterface::STAGE_DELETE);
 
-        self::assertTrue($rows[0]->isDue());
-        self::assertNotNull($rows[0]->getDeactivatedAt());
-        self::assertNotNull($rows[0]->getDueAt());
+        $this->assertTrue($rows[0]->isDue());
+        $this->assertNotNull($rows[0]->getDeactivatedAt());
+        $this->assertNotNull($rows[0]->getDueAt());
     }
 
     public function testADeactivationInsideTheDeletionWindowIsListedWithTheDateItFallsDue(): void
@@ -157,8 +157,8 @@ final class CandidateProviderTest extends TestCase
 
         $rows = $this->provider()->getList(LifecycleCandidateProviderInterface::STAGE_DELETE);
 
-        self::assertFalse($rows[0]->isDue());
-        self::assertSame(
+        $this->assertFalse($rows[0]->isDue());
+        $this->assertSame(
             gmdate('Y-m-d\TH:i:s\Z', $this->now - (10 * self::DAY) + (180 * self::DAY)),
             $rows[0]->getDueAt()
         );
@@ -174,8 +174,8 @@ final class CandidateProviderTest extends TestCase
 
         $rows = $this->provider()->getList(LifecycleCandidateProviderInterface::STAGE_DELETE);
 
-        self::assertFalse($rows[0]->isDue());
-        self::assertNull($rows[0]->getDeactivatedAt());
+        $this->assertFalse($rows[0]->isDue());
+        $this->assertNull($rows[0]->getDeactivatedAt());
     }
 
     public function testAPageIsCappedAtTheConfiguredBatchSizeHoweverMuchIsAskedFor(): void
@@ -188,7 +188,7 @@ final class CandidateProviderTest extends TestCase
         $rows = $this->provider(['general/batch_size' => '2'])
             ->getList(LifecycleCandidateProviderInterface::STAGE_DEACTIVATE, 100);
 
-        self::assertCount(2, $rows);
+        $this->assertCount(2, $rows);
     }
 
     public function testTheCursorSkipsWhatTheCallerHasAlreadySeen(): void
@@ -204,7 +204,7 @@ final class CandidateProviderTest extends TestCase
             2
         );
 
-        self::assertSame([3, 4], array_map(static fn ($row): int => $row->getUserId(), $rows));
+        $this->assertSame([3, 4], array_map(static fn ($row): int => $row->getUserId(), $rows));
     }
 
     public function testAnAccountThatHasNeverSignedInIsAgedFromWhenItWasCreated(): void
@@ -214,9 +214,9 @@ final class CandidateProviderTest extends TestCase
 
         $rows = $this->provider()->getList(LifecycleCandidateProviderInterface::STAGE_DEACTIVATE);
 
-        self::assertTrue($rows[0]->isDue());
-        self::assertNull($rows[0]->getLastLoginAt());
-        self::assertSame(400, $rows[0]->getDormantDays());
+        $this->assertTrue($rows[0]->isDue());
+        $this->assertNull($rows[0]->getLastLoginAt());
+        $this->assertSame(400, $rows[0]->getDormantDays());
     }
 
     /**

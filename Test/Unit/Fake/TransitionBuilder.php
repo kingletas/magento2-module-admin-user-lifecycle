@@ -17,7 +17,7 @@ use Commerce\AdminUserLifecycle\Model\Service\AccountTransition;
 /**
  * Wires a real `AccountTransition` the way `di.xml` does.
  */
-final class TransitionBuilder
+class TransitionBuilder
 {
     public static function build(
         Config $config,

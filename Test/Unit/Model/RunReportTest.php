@@ -13,7 +13,7 @@ use Commerce\AdminUserLifecycle\Model\RunReport;
 use Commerce\AdminUserLifecycle\Model\StageResult;
 use PHPUnit\Framework\TestCase;
 
-final class RunReportTest extends TestCase
+class RunReportTest extends TestCase
 {
     public function testItAggregatesChangesAndFailuresAcrossStages(): void
     {
@@ -42,10 +42,10 @@ final class RunReportTest extends TestCase
             1.5
         );
 
-        self::assertTrue($report->hasChanges());
-        self::assertTrue($report->hasFailures());
-        self::assertCount(2, $report->getAllEntries());
-        self::assertSame(9, $report->getActiveAdminsBefore());
+        $this->assertTrue($report->hasChanges());
+        $this->assertTrue($report->hasFailures());
+        $this->assertCount(2, $report->getAllEntries());
+        $this->assertSame(9, $report->getActiveAdminsBefore());
     }
 
     /**
@@ -57,8 +57,8 @@ final class RunReportTest extends TestCase
         $dry = new RunReport($this->context(true), [], 3, 0.1);
         $live = new RunReport($this->context(false), [], 3, 0.1);
 
-        self::assertStringContainsString('dry run', $dry->summarise());
-        self::assertStringNotContainsString('dry run', $live->summarise());
+        $this->assertStringContainsString('dry run', $dry->summarise());
+        $this->assertStringNotContainsString('dry run', $live->summarise());
     }
 
     public function testRowsCarryTheCountsAndTheEntriesTogether(): void
@@ -79,17 +79,17 @@ final class RunReportTest extends TestCase
 
         $rows = $report->toRows();
 
-        self::assertSame('deactivate', $rows[0]['stage']);
-        self::assertTrue($rows[0]['enabled']);
-        self::assertSame(7, $rows[0]['examined']);
-        self::assertSame(1, $rows[0]['acted']);
-        self::assertSame(1, $rows[0]['skipped']);
-        self::assertCount(2, $rows[0]['entries']);
+        $this->assertSame('deactivate', $rows[0]['stage']);
+        $this->assertTrue($rows[0]['enabled']);
+        $this->assertSame(7, $rows[0]['examined']);
+        $this->assertSame(1, $rows[0]['acted']);
+        $this->assertSame(1, $rows[0]['skipped']);
+        $this->assertCount(2, $rows[0]['entries']);
     }
 
     public function testAnEmptyReportProducesNoEntries(): void
     {
-        self::assertSame([], (new RunReport($this->context(false), [], 0, 0.0))->getAllEntries());
+        $this->assertSame([], (new RunReport($this->context(false), [], 0, 0.0))->getAllEntries());
     }
 
     private function context(bool $dryRun): RunContext

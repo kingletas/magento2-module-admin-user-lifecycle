@@ -24,7 +24,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use RuntimeException;
 
-final class RunLifecycleCommandTest extends TestCase
+class RunLifecycleCommandTest extends TestCase
 {
     private const NOW = 1_760_000_000;
 
@@ -44,8 +44,8 @@ final class RunLifecycleCommandTest extends TestCase
         $tester = $this->tester();
         $status = $tester->execute([]);
 
-        self::assertSame(Command::SUCCESS, $status);
-        self::assertStringContainsString('Admin user lifecycle run', $tester->getDisplay());
+        $this->assertSame(Command::SUCCESS, $status);
+        $this->assertStringContainsString('Admin user lifecycle run', $tester->getDisplay());
     }
 
     /**
@@ -54,7 +54,7 @@ final class RunLifecycleCommandTest extends TestCase
      */
     public function testDryRunOverridesTheConfiguredDefault(): void
     {
-        $this->runner->expects(self::once())
+        $this->runner->expects($this->once())
             ->method('run')
             ->with(JournalEntry::ACTOR_CLI, true)
             ->willReturn($this->report(dryRun: true));
@@ -68,7 +68,7 @@ final class RunLifecycleCommandTest extends TestCase
      */
     public function testLiveOverridesADryRunDefault(): void
     {
-        $this->runner->expects(self::once())
+        $this->runner->expects($this->once())
             ->method('run')
             ->with(JournalEntry::ACTOR_CLI, false)
             ->willReturn($this->report());
@@ -78,28 +78,28 @@ final class RunLifecycleCommandTest extends TestCase
 
     public function testContradictoryFlagsAreRefused(): void
     {
-        $this->runner->expects(self::never())->method('run');
+        $this->runner->expects($this->never())->method('run');
 
         $tester = $this->tester();
         $status = $tester->execute(['--dry-run' => true, '--live' => true]);
 
-        self::assertSame(Command::INVALID, $status);
+        $this->assertSame(Command::INVALID, $status);
     }
 
     public function testADisabledModuleIsReportedRatherThanRun(): void
     {
-        $this->runner->expects(self::never())->method('run');
+        $this->runner->expects($this->never())->method('run');
 
         $tester = $this->tester(['general/enabled' => '0']);
         $status = $tester->execute([]);
 
-        self::assertSame(Command::SUCCESS, $status);
-        self::assertStringContainsString('module is disabled', $tester->getDisplay());
+        $this->assertSame(Command::SUCCESS, $status);
+        $this->assertStringContainsString('module is disabled', $tester->getDisplay());
     }
 
     public function testForceEvaluatesADisabledModule(): void
     {
-        $this->runner->expects(self::once())->method('run')->willReturn($this->report());
+        $this->runner->expects($this->once())->method('run')->willReturn($this->report());
 
         $this->tester(['general/enabled' => '0'])->execute(['--force' => true]);
     }
@@ -112,13 +112,13 @@ final class RunLifecycleCommandTest extends TestCase
     {
         $this->runner->method('run')->willReturn($this->report(hasFailures: true));
 
-        self::assertSame(Command::FAILURE, $this->tester()->execute([]));
+        $this->assertSame(Command::FAILURE, $this->tester()->execute([]));
     }
 
     public function testNoEmailSuppressesTheReportMail(): void
     {
         $this->runner->method('run')->willReturn($this->report());
-        $this->reporter->expects(self::never())->method('send');
+        $this->reporter->expects($this->never())->method('send');
 
         $this->tester()->execute(['--no-email' => true]);
     }
@@ -129,8 +129,8 @@ final class RunLifecycleCommandTest extends TestCase
 
         $tester = $this->tester();
 
-        self::assertSame(Command::FAILURE, $tester->execute([]));
-        self::assertStringContainsString('the database is unavailable', $tester->getDisplay());
+        $this->assertSame(Command::FAILURE, $tester->execute([]));
+        $this->assertStringContainsString('the database is unavailable', $tester->getDisplay());
     }
 
     /**

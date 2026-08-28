@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use RuntimeException;
 
-final class LifecycleRunnerTest extends TestCase
+class LifecycleRunnerTest extends TestCase
 {
     private InMemoryJournal $journal;
 
@@ -44,8 +44,8 @@ final class LifecycleRunnerTest extends TestCase
             'delete' => $this->stage('delete', $order),
         ])->run(JournalEntry::ACTOR_CRON);
 
-        self::assertSame(['warn', 'deactivate', 'delete'], $order);
-        self::assertCount(3, $report->getStages());
+        $this->assertSame(['warn', 'deactivate', 'delete'], $order);
+        $this->assertCount(3, $report->getStages());
     }
 
     /**
@@ -59,9 +59,9 @@ final class LifecycleRunnerTest extends TestCase
             'deactivate' => $this->stage('deactivate', $order),
         ])->run(JournalEntry::ACTOR_CRON);
 
-        self::assertSame(['deactivate'], $order);
-        self::assertTrue($report->hasFailures());
-        self::assertStringContainsString(
+        $this->assertSame(['deactivate'], $order);
+        $this->assertTrue($report->hasFailures());
+        $this->assertStringContainsString(
             'stage "warn" threw',
             $report->getStages()[0]->getFailed()[0]->getReason()
         );
@@ -75,7 +75,7 @@ final class LifecycleRunnerTest extends TestCase
             'deactivate' => $this->stage('deactivate', $order, acted: 3),
         ])->run(JournalEntry::ACTOR_CRON);
 
-        self::assertCount(5, $this->journal->entries);
+        $this->assertCount(5, $this->journal->entries);
     }
 
     /**
@@ -90,8 +90,8 @@ final class LifecycleRunnerTest extends TestCase
         $report = $this->runner(['deactivate' => $this->stage('deactivate', $order, acted: 1)])
             ->run(JournalEntry::ACTOR_CRON);
 
-        self::assertTrue($report->hasChanges());
-        self::assertCount(1, $report->getAllEntries());
+        $this->assertTrue($report->hasChanges());
+        $this->assertCount(1, $report->getAllEntries());
     }
 
     public function testTheConfiguredDryRunIsUsedWhenTheCallerDoesNotOverrideIt(): void
@@ -99,7 +99,7 @@ final class LifecycleRunnerTest extends TestCase
         $order = [];
         $runner = $this->runner(['warn' => $this->stage('warn', $order)], ['general/dry_run' => '1']);
 
-        self::assertTrue($runner->run(JournalEntry::ACTOR_CRON)->isDryRun());
+        $this->assertTrue($runner->run(JournalEntry::ACTOR_CRON)->isDryRun());
     }
 
     public function testACallerCanForceALiveRunOverADryRunDefault(): void
@@ -107,7 +107,7 @@ final class LifecycleRunnerTest extends TestCase
         $order = [];
         $runner = $this->runner(['warn' => $this->stage('warn', $order)], ['general/dry_run' => '1']);
 
-        self::assertFalse($runner->run(JournalEntry::ACTOR_CLI, false)->isDryRun());
+        $this->assertFalse($runner->run(JournalEntry::ACTOR_CLI, false)->isDryRun());
     }
 
     public function testTheActiveAdministratorCountIsCapturedBeforeThePass(): void
@@ -122,7 +122,7 @@ final class LifecycleRunnerTest extends TestCase
         $report = $this->runner(['warn' => $this->stage('warn', $order)], [], $finder)
             ->run(JournalEntry::ACTOR_CRON);
 
-        self::assertSame(2, $report->getActiveAdminsBefore());
+        $this->assertSame(2, $report->getActiveAdminsBefore());
     }
 
     /**

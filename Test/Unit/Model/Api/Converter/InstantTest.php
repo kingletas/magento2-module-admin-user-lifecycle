@@ -10,19 +10,19 @@ namespace Commerce\AdminUserLifecycle\Test\Unit\Model\Api\Converter;
 use Commerce\AdminUserLifecycle\Model\Api\Converter\Instant;
 use PHPUnit\Framework\TestCase;
 
-final class InstantTest extends TestCase
+class InstantTest extends TestCase
 {
     public function testAnInstantIsWrittenAsUtcWithTheZoneSpelledOut(): void
     {
-        self::assertSame('2026-08-27T14:30:00Z', (new Instant())->format(1787841000));
+        $this->assertSame('2026-08-27T14:30:00Z', (new Instant())->format(1787841000));
     }
 
     public function testNullSurvivesFormatting(): void
     {
         $instant = new Instant();
 
-        self::assertNull($instant->formatOrNull(null));
-        self::assertSame('1970-01-01T00:00:00Z', $instant->formatOrNull(0));
+        $this->assertNull($instant->formatOrNull(null));
+        $this->assertSame('1970-01-01T00:00:00Z', $instant->formatOrNull(0));
     }
 
     /**
@@ -34,7 +34,7 @@ final class InstantTest extends TestCase
         date_default_timezone_set('America/New_York');
 
         try {
-            self::assertSame(
+            $this->assertSame(
                 gmmktime(0, 0, 0, 8, 27, 2026),
                 (new Instant())->parse('2026-08-27')
             );
@@ -47,18 +47,18 @@ final class InstantTest extends TestCase
     {
         $instant = new Instant();
 
-        self::assertSame(gmmktime(12, 0, 0, 8, 27, 2026), $instant->parse('2026-08-27T12:00:00Z'));
-        self::assertSame(gmmktime(11, 0, 0, 8, 27, 2026), $instant->parse('2026-08-27T12:00:00+01:00'));
-        self::assertSame(gmmktime(11, 0, 0, 8, 27, 2026), $instant->parse('2026-08-27T12:00:00+0100'));
+        $this->assertSame(gmmktime(12, 0, 0, 8, 27, 2026), $instant->parse('2026-08-27T12:00:00Z'));
+        $this->assertSame(gmmktime(11, 0, 0, 8, 27, 2026), $instant->parse('2026-08-27T12:00:00+01:00'));
+        $this->assertSame(gmmktime(11, 0, 0, 8, 27, 2026), $instant->parse('2026-08-27T12:00:00+0100'));
     }
 
     public function testSomethingThatIsNotADateIsRefusedRatherThanGuessedAt(): void
     {
         $instant = new Instant();
 
-        self::assertNull($instant->parse('yesterday-ish'));
-        self::assertNull($instant->parse(''));
-        self::assertNull($instant->parse('   '));
+        $this->assertNull($instant->parse('yesterday-ish'));
+        $this->assertNull($instant->parse(''));
+        $this->assertNull($instant->parse('   '));
     }
 
     /**
@@ -69,6 +69,6 @@ final class InstantTest extends TestCase
     {
         $instant = new Instant();
 
-        self::assertSame(1787841000, $instant->parse($instant->format(1787841000)));
+        $this->assertSame(1787841000, $instant->parse($instant->format(1787841000)));
     }
 }

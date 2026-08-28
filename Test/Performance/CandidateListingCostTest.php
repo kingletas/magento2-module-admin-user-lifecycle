@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * What answering "what is due?" costs.
  */
-final class CandidateListingCostTest extends TestCase
+class CandidateListingCostTest extends TestCase
 {
     use BudgetAssertions;
 
@@ -66,7 +66,7 @@ final class CandidateListingCostTest extends TestCase
      */
     public function testTheActiveAdministratorCountIsAskedOncePerPageHoweverLongThePageIs(): void
     {
-        self::assertConstantCost(
+        $this->assertConstantCost(
             'counting active administrators while listing deactivation candidates',
             function (int $accounts): int {
                 $this->givenDormantAccounts($accounts);
@@ -83,7 +83,7 @@ final class CandidateListingCostTest extends TestCase
      */
     public function testTheDeletionClockIsReadOncePerPageRatherThanOncePerAccount(): void
     {
-        self::assertConstantCost(
+        $this->assertConstantCost(
             'reading recorded deactivations while listing deletion candidates',
             function (int $accounts): int {
                 $this->givenInactiveAccounts($accounts);
@@ -102,7 +102,7 @@ final class CandidateListingCostTest extends TestCase
     {
         $this->provider()->getList(LifecycleCandidateProviderInterface::STAGE_DELETE);
 
-        self::assertSame(0, $this->journalReads);
+        $this->assertSame(0, $this->journalReads);
     }
 
     /**
@@ -116,7 +116,7 @@ final class CandidateListingCostTest extends TestCase
 
         $this->provider($counting)->getList(LifecycleCandidateProviderInterface::STAGE_DEACTIVATE);
 
-        self::assertCostAtMost(
+        $this->assertCostAtMost(
             'configuration reads for a page of 200 deactivation candidates',
             (5 * 200) + 3,
             $counting->reads(),

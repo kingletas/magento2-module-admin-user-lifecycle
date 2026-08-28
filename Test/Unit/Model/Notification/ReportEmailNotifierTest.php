@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use RuntimeException;
 
-final class ReportEmailNotifierTest extends TestCase
+class ReportEmailNotifierTest extends TestCase
 {
     private const NOW = 1_760_000_000;
 
@@ -54,17 +54,17 @@ final class ReportEmailNotifierTest extends TestCase
 
     public function testItSendsToEveryConfiguredRecipient(): void
     {
-        $this->transportBuilder->expects(self::once())
+        $this->transportBuilder->expects($this->once())
             ->method('addTo')
             ->with(['ops@example.com', 'security@example.com'])
             ->willReturnSelf();
 
-        $this->transport->expects(self::once())->method('sendMessage');
+        $this->transport->expects($this->once())->method('sendMessage');
 
         $sent = $this->notifier(['report/recipients' => 'ops@example.com,security@example.com'])
             ->send($this->report(hasChanges: true));
 
-        self::assertTrue($sent);
+        $this->assertTrue($sent);
     }
 
     /**
@@ -73,9 +73,9 @@ final class ReportEmailNotifierTest extends TestCase
      */
     public function testAQuietPassSendsNothingWhenOnlyWhenChangedIsOn(): void
     {
-        $this->transport->expects(self::never())->method('sendMessage');
+        $this->transport->expects($this->never())->method('sendMessage');
 
-        self::assertFalse(
+        $this->assertFalse(
             $this->notifier(['report/recipients' => 'ops@example.com'])->send($this->report(hasChanges: false))
         );
     }
@@ -86,9 +86,9 @@ final class ReportEmailNotifierTest extends TestCase
      */
     public function testAQuietPassWithFailuresStillSends(): void
     {
-        $this->transport->expects(self::once())->method('sendMessage');
+        $this->transport->expects($this->once())->method('sendMessage');
 
-        self::assertTrue(
+        $this->assertTrue(
             $this->notifier(['report/recipients' => 'ops@example.com'])
                 ->send($this->report(hasChanges: false, hasFailures: true))
         );
@@ -96,16 +96,16 @@ final class ReportEmailNotifierTest extends TestCase
 
     public function testNoRecipientsMeansNoMailAndNoError(): void
     {
-        $this->transport->expects(self::never())->method('sendMessage');
+        $this->transport->expects($this->never())->method('sendMessage');
 
-        self::assertFalse($this->notifier(['report/recipients' => ''])->send($this->report(hasChanges: true)));
+        $this->assertFalse($this->notifier(['report/recipients' => ''])->send($this->report(hasChanges: true)));
     }
 
     public function testReportingCanBeSwitchedOffEntirely(): void
     {
-        $this->transport->expects(self::never())->method('sendMessage');
+        $this->transport->expects($this->never())->method('sendMessage');
 
-        self::assertFalse(
+        $this->assertFalse(
             $this->notifier(['report/enabled' => '0', 'report/recipients' => 'ops@example.com'])
                 ->send($this->report(hasChanges: true))
         );
@@ -119,7 +119,7 @@ final class ReportEmailNotifierTest extends TestCase
         $this->notifier(['report/recipients' => 'ops@example.com'])
             ->send($this->report(hasChanges: true, hasFailures: true, dryRun: true));
 
-        self::assertSame(
+        $this->assertSame(
             '[DRY RUN][FAILURES] Admin user lifecycle report',
             $this->templateVars['subject']
         );
@@ -129,8 +129,8 @@ final class ReportEmailNotifierTest extends TestCase
     {
         $this->notifier(['report/recipients' => 'ops@example.com'])->send($this->report(hasChanges: true));
 
-        self::assertArrayHasKey('stages_html', $this->templateVars);
-        self::assertIsString($this->templateVars['stages_html']);
+        $this->assertArrayHasKey('stages_html', $this->templateVars);
+        $this->assertIsString($this->templateVars['stages_html']);
     }
 
     /**
@@ -140,7 +140,7 @@ final class ReportEmailNotifierTest extends TestCase
     {
         $this->transport->method('sendMessage')->willThrowException(new RuntimeException('SMTP refused'));
 
-        self::assertFalse(
+        $this->assertFalse(
             $this->notifier(['report/recipients' => 'ops@example.com'])->send($this->report(hasChanges: true))
         );
     }

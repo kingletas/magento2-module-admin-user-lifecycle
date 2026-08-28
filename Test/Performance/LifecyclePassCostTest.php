@@ -35,7 +35,7 @@ use Psr\Log\NullLogger;
 /**
  * What one nightly pass costs.
  */
-final class LifecyclePassCostTest extends TestCase
+class LifecyclePassCostTest extends TestCase
 {
     use BudgetAssertions;
 
@@ -74,7 +74,7 @@ final class LifecyclePassCostTest extends TestCase
 
     public function testDormantAccountsAreReadInPagesRatherThanAllAtOnce(): void
     {
-        self::assertCostPerBatch(
+        $this->assertCostPerBatch(
             'queries reading the dormant set',
             50,
             function (int $admins): int {
@@ -94,7 +94,7 @@ final class LifecyclePassCostTest extends TestCase
      */
     public function testTheActiveCountIsAskedOncePerPassRatherThanPerCandidate(): void
     {
-        self::assertConstantCost(
+        $this->assertConstantCost(
             'active-administrator counts per pass',
             function (int $admins): int {
                 $this->reset($admins);
@@ -112,7 +112,7 @@ final class LifecyclePassCostTest extends TestCase
      */
     public function testTheJournalIsWrittenOncePerPass(): void
     {
-        self::assertConstantCost(
+        $this->assertConstantCost(
             'journal statements per pass',
             function (int $admins): int {
                 $this->reset($admins);
@@ -134,7 +134,7 @@ final class LifecyclePassCostTest extends TestCase
 
         $this->runPass();
 
-        self::assertGreaterThanOrEqual(
+        $this->assertGreaterThanOrEqual(
             199,
             $this->journalEntries,
             'Every account the pass considered should have an entry, whatever it decided.'
@@ -154,8 +154,8 @@ final class LifecyclePassCostTest extends TestCase
 
         $this->runPass();
 
-        self::assertCostAtMost('reads for a pass with nothing to do', 1, $this->findCalls);
-        self::assertSame(0, $this->journalWrites, 'Nothing happened, so nothing was journalled.');
+        $this->assertCostAtMost('reads for a pass with nothing to do', 1, $this->findCalls);
+        $this->assertSame(0, $this->journalWrites, 'Nothing happened, so nothing was journalled.');
     }
 
     private function reset(int $dormantAdmins): void

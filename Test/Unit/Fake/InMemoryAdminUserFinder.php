@@ -13,7 +13,7 @@ use Commerce\AdminUserLifecycle\Model\Candidate;
 /**
  * An admin user table in an array.
  */
-final class InMemoryAdminUserFinder implements AdminUserFinderInterface
+class InMemoryAdminUserFinder implements AdminUserFinderInterface
 {
     /** @var Candidate[] */
     private array $candidates;

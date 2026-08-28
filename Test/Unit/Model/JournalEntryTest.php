@@ -13,7 +13,7 @@ use Commerce\AdminUserLifecycle\Model\JournalEntryMapper;
 use Commerce\AdminUserLifecycle\Model\RunContext;
 use PHPUnit\Framework\TestCase;
 
-final class JournalEntryTest extends TestCase
+class JournalEntryTest extends TestCase
 {
     private const NOW = 1_760_000_000;
 
@@ -28,13 +28,13 @@ final class JournalEntryTest extends TestCase
 
         $row = $entry->toRow();
 
-        self::assertSame(7, $row['user_id']);
-        self::assertSame('adminuser', $row['username']);
-        self::assertSame('ada@example.com', $row['email']);
-        self::assertSame(JournalEntry::ACTION_DELETED, $row['action']);
-        self::assertSame('cli', $row['actor']);
-        self::assertSame(0, $row['dry_run']);
-        self::assertSame(gmdate('Y-m-d H:i:s', self::NOW), $row['occurred_at']);
+        $this->assertSame(7, $row['user_id']);
+        $this->assertSame('adminuser', $row['username']);
+        $this->assertSame('ada@example.com', $row['email']);
+        $this->assertSame(JournalEntry::ACTION_DELETED, $row['action']);
+        $this->assertSame('cli', $row['actor']);
+        $this->assertSame(0, $row['dry_run']);
+        $this->assertSame(gmdate('Y-m-d H:i:s', self::NOW), $row['occurred_at']);
     }
 
     /**
@@ -50,7 +50,7 @@ final class JournalEntryTest extends TestCase
             $this->context()
         );
 
-        self::assertSame(JournalEntry::MAX_REASON_LENGTH, mb_strlen((string) $entry->toRow()['reason']));
+        $this->assertSame(JournalEntry::MAX_REASON_LENGTH, mb_strlen((string) $entry->toRow()['reason']));
     }
 
     public function testAnOverLongUsernameIsClippedToTheColumnWidth(): void
@@ -59,7 +59,7 @@ final class JournalEntryTest extends TestCase
         $entry = (new JournalEntryMapper())
             ->fromCandidate($candidate, JournalEntry::ACTION_SKIPPED, 'x', $this->context());
 
-        self::assertSame(40, mb_strlen((string) $entry->toRow()['username']));
+        $this->assertSame(40, mb_strlen((string) $entry->toRow()['username']));
     }
 
     public function testADryRunEntryLabelsItselfInTheDescription(): void
@@ -71,8 +71,8 @@ final class JournalEntryTest extends TestCase
             new RunContext(JournalEntry::ACTOR_CRON, true, self::NOW)
         );
 
-        self::assertStringStartsWith('[dry run] ', $entry->describe());
-        self::assertSame(1, $entry->toRow()['dry_run']);
+        $this->assertStringStartsWith('[dry run] ', $entry->describe());
+        $this->assertSame(1, $entry->toRow()['dry_run']);
     }
 
     private function candidate(): Candidate

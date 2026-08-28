@@ -15,7 +15,7 @@ use Commerce\AdminUserLifecycle\Model\StageResult;
 use Magento\Framework\Escaper;
 use PHPUnit\Framework\TestCase;
 
-final class ReportFormatterTest extends TestCase
+class ReportFormatterTest extends TestCase
 {
     private const NOW = 1_760_000_000;
 
@@ -52,10 +52,10 @@ final class ReportFormatterTest extends TestCase
             1
         )]));
 
-        self::assertStringNotContainsString('<script>', $html);
-        self::assertStringNotContainsString('<img src=x', $html);
-        self::assertStringContainsString('&lt;script&gt;', $html);
-        self::assertStringContainsString('&lt;img src=x onerror=alert(2)&gt;', $html);
+        $this->assertStringNotContainsString('<script>', $html);
+        $this->assertStringNotContainsString('<img src=x', $html);
+        $this->assertStringContainsString('&lt;script&gt;', $html);
+        $this->assertStringContainsString('&lt;img src=x onerror=alert(2)&gt;', $html);
     }
 
     public function testTheStageNameIsEscapedToo(): void
@@ -71,7 +71,7 @@ final class ReportFormatterTest extends TestCase
             )])
         );
 
-        self::assertStringNotContainsString('<b>evil</b>', $html);
+        $this->assertStringNotContainsString('<b>evil</b>', $html);
     }
 
     /**
@@ -106,16 +106,16 @@ final class ReportFormatterTest extends TestCase
             )])
         );
 
-        self::assertStringContainsString('and 10 more', $html);
-        self::assertSame(50, substr_count($html, '<tr><td'));
+        $this->assertStringContainsString('and 10 more', $html);
+        $this->assertSame(50, substr_count($html, '<tr><td'));
     }
 
     public function testADisabledStageSaysSoRatherThanRenderingAnEmptyTable(): void
     {
         $html = $this->formatter->toHtml($this->report([new StageResult(false, 'delete')]));
 
-        self::assertStringContainsString('Disabled.', $html);
-        self::assertStringNotContainsString('<table', $html);
+        $this->assertStringContainsString('Disabled.', $html);
+        $this->assertStringNotContainsString('<table', $html);
     }
 
     public function testPlainTextCarriesEveryEntryDescription(): void
@@ -142,7 +142,7 @@ final class ReportFormatterTest extends TestCase
             )])
         );
 
-        self::assertStringContainsString('deactivated user 7 (dormant.user): no sign-in for 120 days', $text);
+        $this->assertStringContainsString('deactivated user 7 (dormant.user): no sign-in for 120 days', $text);
     }
 
     /**

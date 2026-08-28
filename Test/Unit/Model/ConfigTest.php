@@ -13,7 +13,7 @@ use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-final class ConfigTest extends TestCase
+class ConfigTest extends TestCase
 {
     private const DAY = 86400;
 
@@ -22,14 +22,14 @@ final class ConfigTest extends TestCase
         $scopeConfig = new ArrayScopeConfig(['acme_adminusers/general/enabled' => '1']);
         $config = new Config($scopeConfig, 'acme_adminusers');
 
-        self::assertTrue($config->isEnabled());
+        $this->assertTrue($config->isEnabled());
     }
 
     public function testAnAbsentDryRunSettingReadsAsADryRun(): void
     {
         $config = new Config(new ArrayScopeConfig([]), ConfigBuilder::SECTION);
 
-        self::assertTrue(
+        $this->assertTrue(
             $config->isDryRun(),
             'An install whose config row is missing must not become a live account-deletion job.'
         );
@@ -40,7 +40,7 @@ final class ConfigTest extends TestCase
     {
         $config = ConfigBuilder::build(['general/dry_run' => $stored]);
 
-        self::assertSame($expected, $config->isDryRun());
+        $this->assertSame($expected, $config->isDryRun());
     }
 
     /**
@@ -64,9 +64,9 @@ final class ConfigTest extends TestCase
             'delete/deactivated_days' => '200',
         ]);
 
-        self::assertSame(3 * self::DAY, $config->getWarningSeconds());
-        self::assertSame(45 * self::DAY, $config->getInactiveSeconds());
-        self::assertSame(200 * self::DAY, $config->getDeleteAfterSeconds());
+        $this->assertSame(3 * self::DAY, $config->getWarningSeconds());
+        $this->assertSame(45 * self::DAY, $config->getInactiveSeconds());
+        $this->assertSame(200 * self::DAY, $config->getDeleteAfterSeconds());
     }
 
     /**
@@ -78,7 +78,7 @@ final class ConfigTest extends TestCase
     {
         $config = ConfigBuilder::build(['deactivate/inactive_days' => $stored]);
 
-        self::assertSame(Config::DEFAULT_INACTIVE_DAYS * self::DAY, $config->getInactiveSeconds());
+        $this->assertSame(Config::DEFAULT_INACTIVE_DAYS * self::DAY, $config->getInactiveSeconds());
     }
 
     /**
@@ -102,7 +102,7 @@ final class ConfigTest extends TestCase
     {
         $config = ConfigBuilder::build(['deactivate/new_account_grace_days' => '0']);
 
-        self::assertSame(0, $config->getNewAccountGraceSeconds());
+        $this->assertSame(0, $config->getNewAccountGraceSeconds());
     }
 
     public function testMinimumActiveAdministratorsCanNeverBeDrivenBelowOne(): void
@@ -110,7 +110,7 @@ final class ConfigTest extends TestCase
         foreach (['0', '-3', '', 'none'] as $stored) {
             $config = ConfigBuilder::build(['protect/min_active_admins' => $stored]);
 
-            self::assertGreaterThanOrEqual(
+            $this->assertGreaterThanOrEqual(
                 Config::ABSOLUTE_MIN_ACTIVE_ADMINS,
                 $config->getMinActiveAdmins(),
                 sprintf('Stored value %s must not disable the last-administrator guard.', var_export($stored, true))
@@ -124,14 +124,14 @@ final class ConfigTest extends TestCase
             'protect/usernames' => "Admin, break-glass\nINTEGRATION\n\n , ,deploy",
         ]);
 
-        self::assertSame(['admin', 'break-glass', 'integration', 'deploy'], $config->getProtectedUsernames());
+        $this->assertSame(['admin', 'break-glass', 'integration', 'deploy'], $config->getProtectedUsernames());
     }
 
     public function testProtectedRoleIdsIgnoreAnythingThatIsNotAPositiveInteger(): void
     {
         $config = ConfigBuilder::build(['protect/role_ids' => '3,,abc,-1,0,7,3']);
 
-        self::assertSame([3, 7], $config->getProtectedRoleIds());
+        $this->assertSame([3, 7], $config->getProtectedRoleIds());
     }
 
     /**
@@ -144,7 +144,7 @@ final class ConfigTest extends TestCase
             'report/recipients' => "ops@example.com,not-an-address\nsecurity@example.com,ops@example.com",
         ]);
 
-        self::assertSame(['ops@example.com', 'security@example.com'], $config->getReportRecipients());
+        $this->assertSame(['ops@example.com', 'security@example.com'], $config->getReportRecipients());
     }
 
     /**
@@ -158,7 +158,7 @@ final class ConfigTest extends TestCase
             'report/journal_retention_days' => '30',
         ]);
 
-        self::assertSame(
+        $this->assertSame(
             (365 + 30) * self::DAY,
             $config->getJournalRetentionSeconds(),
             'Retention must exceed the deletion window it provides evidence for.'
@@ -167,8 +167,8 @@ final class ConfigTest extends TestCase
 
     public function testBatchSizeIsBounded(): void
     {
-        self::assertSame(10000, ConfigBuilder::build(['general/batch_size' => '999999'])->getBatchSize());
-        self::assertSame(
+        $this->assertSame(10000, ConfigBuilder::build(['general/batch_size' => '999999'])->getBatchSize());
+        $this->assertSame(
             Config::DEFAULT_BATCH_SIZE,
             ConfigBuilder::build(['general/batch_size' => '0'])->getBatchSize()
         );

@@ -24,7 +24,7 @@ use Commerce\AdminUserLifecycle\Test\Unit\Fake\TransitionBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-final class WarnInactiveUsersTest extends TestCase
+class WarnInactiveUsersTest extends TestCase
 {
     private const DAY = 86400;
     private const NOW = 1_760_000_000;
@@ -48,8 +48,8 @@ final class WarnInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([1], array_column($this->notifier->warned, 0));
-        self::assertCount(1, $result->getActed());
+        $this->assertSame([1], array_column($this->notifier->warned, 0));
+        $this->assertCount(1, $result->getActed());
     }
 
     public function testTheWarningNamesTheDateTheAccountWillBeDeactivated(): void
@@ -59,8 +59,8 @@ final class WarnInactiveUsersTest extends TestCase
         $result = $this->executeStage($finder);
 
         $expectedDueAt = self::NOW + (5 * self::DAY);
-        self::assertSame($expectedDueAt, $this->notifier->warned[0][1]);
-        self::assertStringContainsString(gmdate('Y-m-d', $expectedDueAt), $result->getActed()[0]->getReason());
+        $this->assertSame($expectedDueAt, $this->notifier->warned[0][1]);
+        $this->assertStringContainsString(gmdate('Y-m-d', $expectedDueAt), $result->getActed()[0]->getReason());
     }
 
     public function testAnAccountAlreadyWarnedAboutThisDeactivationIsNotWarnedAgain(): void
@@ -79,9 +79,9 @@ final class WarnInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([], $this->notifier->warned);
-        self::assertCount(1, $result->getSkipped());
-        self::assertStringContainsString('already warned', $result->getSkipped()[0]->getReason());
+        $this->assertSame([], $this->notifier->warned);
+        $this->assertCount(1, $result->getSkipped());
+        $this->assertStringContainsString('already warned', $result->getSkipped()[0]->getReason());
     }
 
     /**
@@ -104,8 +104,8 @@ final class WarnInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([1], array_column($this->notifier->warned, 0));
-        self::assertCount(1, $result->getActed());
+        $this->assertSame([1], array_column($this->notifier->warned, 0));
+        $this->assertCount(1, $result->getActed());
     }
 
     /**
@@ -118,8 +118,8 @@ final class WarnInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder, ['protect/usernames' => 'user1']);
 
-        self::assertSame([], $this->notifier->warned);
-        self::assertSame(
+        $this->assertSame([], $this->notifier->warned);
+        $this->assertSame(
             ProtectionPolicy::REASON_PROTECTED_USERNAME,
             $result->getSkipped()[0]->getReason()
         );
@@ -136,9 +136,9 @@ final class WarnInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertCount(0, $result->getActed());
-        self::assertCount(1, $result->getFailed());
-        self::assertSame(JournalEntry::ACTION_FAILED, $result->getFailed()[0]->getAction());
+        $this->assertCount(0, $result->getActed());
+        $this->assertCount(1, $result->getFailed());
+        $this->assertSame(JournalEntry::ACTION_FAILED, $result->getFailed()[0]->getAction());
     }
 
     public function testAThrowingMailerIsContainedToTheAccountItAffected(): void
@@ -148,9 +148,9 @@ final class WarnInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([2], array_column($this->notifier->warned, 0));
-        self::assertCount(1, $result->getFailed());
-        self::assertStringContainsString('mail transport is down', $result->getFailed()[0]->getReason());
+        $this->assertSame([2], array_column($this->notifier->warned, 0));
+        $this->assertCount(1, $result->getFailed());
+        $this->assertStringContainsString('mail transport is down', $result->getFailed()[0]->getReason());
     }
 
     public function testAnAccountWithNoEmailAddressIsReportedRatherThanIgnored(): void
@@ -167,8 +167,8 @@ final class WarnInactiveUsersTest extends TestCase
 
         $result = $this->executeStage(new InMemoryAdminUserFinder([$candidate]));
 
-        self::assertCount(1, $result->getFailed());
-        self::assertStringContainsString('no email address', $result->getFailed()[0]->getReason());
+        $this->assertCount(1, $result->getFailed());
+        $this->assertStringContainsString('no email address', $result->getFailed()[0]->getReason());
     }
 
     public function testADryRunSendsNoMail(): void
@@ -177,16 +177,16 @@ final class WarnInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder, [], dryRun: true);
 
-        self::assertSame([], $this->notifier->warned);
-        self::assertCount(1, $result->getActed());
-        self::assertStringContainsString('dry run', $result->getActed()[0]->getReason());
+        $this->assertSame([], $this->notifier->warned);
+        $this->assertCount(1, $result->getActed());
+        $this->assertStringContainsString('dry run', $result->getActed()[0]->getReason());
     }
 
     public function testWarningIsDisabledWhenDeactivationIsOff(): void
     {
         $result = $this->executeStage(new InMemoryAdminUserFinder([]), ['deactivate/enabled' => '0']);
 
-        self::assertFalse($result->isEnabled());
+        $this->assertFalse($result->isEnabled());
     }
 
     /**

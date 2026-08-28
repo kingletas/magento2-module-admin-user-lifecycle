@@ -12,7 +12,7 @@ use Commerce\AdminUserLifecycle\Model\Config;
 /**
  * Builds a real `Config` over an array, with the module's shipped defaults.
  */
-final class ConfigBuilder
+class ConfigBuilder
 {
     public const SECTION = 'commerce_adminusers';
 

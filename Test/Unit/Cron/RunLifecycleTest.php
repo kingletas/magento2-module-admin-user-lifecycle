@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use RuntimeException;
 
-final class RunLifecycleTest extends TestCase
+class RunLifecycleTest extends TestCase
 {
     private LifecycleRunner&MockObject $runner;
     private ReportNotifierInterface&MockObject $reporter;
@@ -34,12 +34,12 @@ final class RunLifecycleTest extends TestCase
     {
         $report = $this->report();
 
-        $this->runner->expects(self::once())
+        $this->runner->expects($this->once())
             ->method('run')
             ->with(JournalEntry::ACTOR_CRON)
             ->willReturn($report);
 
-        $this->reporter->expects(self::once())->method('send')->with($report);
+        $this->reporter->expects($this->once())->method('send')->with($report);
 
         $this->cron()->execute();
     }
@@ -50,8 +50,8 @@ final class RunLifecycleTest extends TestCase
      */
     public function testNothingRunsWhileTheModuleIsDisabled(): void
     {
-        $this->runner->expects(self::never())->method('run');
-        $this->reporter->expects(self::never())->method('send');
+        $this->runner->expects($this->never())->method('run');
+        $this->reporter->expects($this->never())->method('send');
 
         $this->cron(['general/enabled' => '0'])->execute();
     }

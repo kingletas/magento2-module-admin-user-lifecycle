@@ -25,7 +25,7 @@ use Commerce\AdminUserLifecycle\Test\Unit\Fake\TransitionBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-final class DeactivateInactiveUsersTest extends TestCase
+class DeactivateInactiveUsersTest extends TestCase
 {
     private const DAY = 86400;
     private const NOW = 1_760_000_000;
@@ -51,8 +51,8 @@ final class DeactivateInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([1, 2], $this->writer->deactivated);
-        self::assertCount(2, $result->getActed());
+        $this->assertSame([1, 2], $this->writer->deactivated);
+        $this->assertCount(2, $result->getActed());
     }
 
     /**
@@ -68,11 +68,11 @@ final class DeactivateInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder, ['protect/min_active_admins' => '2']);
 
-        self::assertSame([1], $this->writer->deactivated, 'Only one account may go before the floor bites.');
-        self::assertCount(2, $result->getSkipped());
+        $this->assertSame([1], $this->writer->deactivated, 'Only one account may go before the floor bites.');
+        $this->assertCount(2, $result->getSkipped());
 
         foreach ($result->getSkipped() as $entry) {
-            self::assertSame(ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS, $entry->getReason());
+            $this->assertSame(ProtectionPolicy::REASON_MIN_ACTIVE_ADMINS, $entry->getReason());
         }
     }
 
@@ -86,8 +86,8 @@ final class DeactivateInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([1], $this->sessions->terminated);
-        self::assertStringContainsString('2 live session(s) ended', $result->getActed()[0]->getReason());
+        $this->assertSame([1], $this->sessions->terminated);
+        $this->assertStringContainsString('2 live session(s) ended', $result->getActed()[0]->getReason());
     }
 
     /**
@@ -100,10 +100,10 @@ final class DeactivateInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([], $this->writer->deactivated);
-        self::assertCount(1, $result->getSkipped());
-        self::assertStringContainsString('reactivated', $result->getSkipped()[0]->getReason());
-        self::assertSame([], $this->sessions->terminated, 'No write happened, so no sessions should be ended.');
+        $this->assertSame([], $this->writer->deactivated);
+        $this->assertCount(1, $result->getSkipped());
+        $this->assertStringContainsString('reactivated', $result->getSkipped()[0]->getReason());
+        $this->assertSame([], $this->sessions->terminated, 'No write happened, so no sessions should be ended.');
     }
 
     public function testADryRunWritesNothingButStillReportsWhatItWouldDo(): void
@@ -112,10 +112,10 @@ final class DeactivateInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder, [], dryRun: true);
 
-        self::assertSame([], $this->writer->deactivated);
-        self::assertSame([], $this->sessions->terminated);
-        self::assertCount(1, $result->getActed());
-        self::assertStringContainsString('dry run', $result->getActed()[0]->getReason());
+        $this->assertSame([], $this->writer->deactivated);
+        $this->assertSame([], $this->sessions->terminated);
+        $this->assertCount(1, $result->getActed());
+        $this->assertStringContainsString('dry run', $result->getActed()[0]->getReason());
     }
 
     /**
@@ -133,7 +133,7 @@ final class DeactivateInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder, ['protect/min_active_admins' => '2'], dryRun: true);
 
-        self::assertCount(3, $result->getActed());
+        $this->assertCount(3, $result->getActed());
     }
 
     public function testAFailingWriteIsRecordedAndTheRestOfThePassContinues(): void
@@ -148,17 +148,17 @@ final class DeactivateInactiveUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([2], $this->writer->deactivated);
-        self::assertCount(1, $result->getFailed());
-        self::assertSame(JournalEntry::ACTION_FAILED, $result->getFailed()[0]->getAction());
+        $this->assertSame([2], $this->writer->deactivated);
+        $this->assertCount(1, $result->getFailed());
+        $this->assertSame(JournalEntry::ACTION_FAILED, $result->getFailed()[0]->getAction());
     }
 
     public function testTheStageReportsItselfDisabledRatherThanEmpty(): void
     {
         $result = $this->executeStage(new InMemoryAdminUserFinder([]), ['deactivate/enabled' => '0']);
 
-        self::assertFalse($result->isEnabled());
-        self::assertSame('deactivate: disabled', $result->summarise());
+        $this->assertFalse($result->isEnabled());
+        $this->assertSame('deactivate: disabled', $result->summarise());
     }
 
     /**

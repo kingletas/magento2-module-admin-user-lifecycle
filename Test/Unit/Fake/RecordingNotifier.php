@@ -16,7 +16,7 @@ use RuntimeException;
  * A user notifier and a session terminator in one, so a test that needs both
  * can assert on one object.
  */
-final class RecordingNotifier implements UserNotifierInterface, SessionTerminatorInterface
+class RecordingNotifier implements UserNotifierInterface, SessionTerminatorInterface
 {
     /** @var array<int, array{0: int, 1: int}> user id, due date */
     public array $warned = [];

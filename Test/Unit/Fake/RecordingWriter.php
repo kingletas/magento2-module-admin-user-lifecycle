@@ -14,7 +14,7 @@ use RuntimeException;
  * Records the writes a stage attempted, and can refuse them the way a
  * compare-and-swap against a changed row does.
  */
-final class RecordingWriter implements AdminUserWriterInterface
+class RecordingWriter implements AdminUserWriterInterface
 {
     /** @var int[] */
     public array $deactivated = [];

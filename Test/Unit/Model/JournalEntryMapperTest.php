@@ -13,7 +13,7 @@ use Commerce\AdminUserLifecycle\Model\JournalEntryMapper;
 use Commerce\AdminUserLifecycle\Model\RunContext;
 use PHPUnit\Framework\TestCase;
 
-final class JournalEntryMapperTest extends TestCase
+class JournalEntryMapperTest extends TestCase
 {
     private const NOW = 1_760_000_000;
 
@@ -37,11 +37,11 @@ final class JournalEntryMapperTest extends TestCase
             $this->context()
         );
 
-        self::assertSame(7, $entry->getUserId());
-        self::assertSame('adminuser', $entry->getUsername());
-        self::assertSame('ada@example.com', $entry->getEmail());
-        self::assertSame(JournalEntry::ACTION_DELETED, $entry->getAction());
-        self::assertSame('deactivated 200 days ago', $entry->getReason());
+        $this->assertSame(7, $entry->getUserId());
+        $this->assertSame('adminuser', $entry->getUsername());
+        $this->assertSame('ada@example.com', $entry->getEmail());
+        $this->assertSame(JournalEntry::ACTION_DELETED, $entry->getAction());
+        $this->assertSame('deactivated 200 days ago', $entry->getReason());
     }
 
     public function testThePassesIdentityIsCopiedToo(): void
@@ -53,9 +53,9 @@ final class JournalEntryMapperTest extends TestCase
             new RunContext(JournalEntry::ACTOR_CLI, true, self::NOW)
         );
 
-        self::assertSame(JournalEntry::ACTOR_CLI, $entry->getActor());
-        self::assertTrue($entry->isDryRun());
-        self::assertSame(self::NOW, $entry->getOccurredAt());
+        $this->assertSame(JournalEntry::ACTOR_CLI, $entry->getActor());
+        $this->assertTrue($entry->isDryRun());
+        $this->assertSame(self::NOW, $entry->getOccurredAt());
     }
 
     /**
@@ -70,9 +70,9 @@ final class JournalEntryMapperTest extends TestCase
             $this->context()
         );
 
-        self::assertSame(0, $entry->getUserId());
-        self::assertSame('', $entry->getUsername());
-        self::assertStringContainsString('the mailer is down', $entry->getReason());
+        $this->assertSame(0, $entry->getUserId());
+        $this->assertSame('', $entry->getUsername());
+        $this->assertStringContainsString('the mailer is down', $entry->getReason());
     }
 
     private function candidate(): Candidate

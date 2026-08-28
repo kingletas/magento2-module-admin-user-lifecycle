@@ -30,14 +30,14 @@ class AclIntegrityTest extends TestCase
 
         $this->walk($provider->getAclResources(), $seen, $duplicates);
 
-        self::assertSame([], $duplicates, 'Duplicate ACL resource ids: ' . implode(', ', $duplicates));
+        $this->assertSame([], $duplicates, 'Duplicate ACL resource ids: ' . implode(', ', $duplicates));
     }
 
     public function testTheAclActuallyBuilds(): void
     {
         $acl = Bootstrap::getObjectManager()->get(Builder::class)->getAcl();
 
-        self::assertTrue($acl->has(self::CONFIG_RESOURCE));
+        $this->assertTrue($acl->has(self::CONFIG_RESOURCE));
     }
 
     /**
@@ -48,7 +48,7 @@ class AclIntegrityTest extends TestCase
     {
         $provider = Bootstrap::getObjectManager()->get(ProviderInterface::class);
 
-        self::assertTrue(
+        $this->assertTrue(
             $this->hasUnder($provider->getAclResources(), 'Magento_Config::config', self::CONFIG_RESOURCE),
             'The section resource must be a child of Magento_Config::config.'
         );

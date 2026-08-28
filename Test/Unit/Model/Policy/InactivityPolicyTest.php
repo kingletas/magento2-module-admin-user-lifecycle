@@ -12,7 +12,7 @@ use Commerce\AdminUserLifecycle\Model\Policy\InactivityPolicy;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
 use PHPUnit\Framework\TestCase;
 
-final class InactivityPolicyTest extends TestCase
+class InactivityPolicyTest extends TestCase
 {
     private const DAY = 86400;
     private const NOW = 1_760_000_000;
@@ -21,9 +21,9 @@ final class InactivityPolicyTest extends TestCase
     {
         $policy = $this->policy(['deactivate/inactive_days' => '90']);
 
-        self::assertFalse($policy->isDueForDeactivation($this->signedInDaysAgo(89), self::NOW));
-        self::assertTrue($policy->isDueForDeactivation($this->signedInDaysAgo(90), self::NOW));
-        self::assertTrue($policy->isDueForDeactivation($this->signedInDaysAgo(400), self::NOW));
+        $this->assertFalse($policy->isDueForDeactivation($this->signedInDaysAgo(89), self::NOW));
+        $this->assertTrue($policy->isDueForDeactivation($this->signedInDaysAgo(90), self::NOW));
+        $this->assertTrue($policy->isDueForDeactivation($this->signedInDaysAgo(400), self::NOW));
     }
 
     /**
@@ -36,9 +36,9 @@ final class InactivityPolicyTest extends TestCase
             'deactivate/new_account_grace_days' => '30',
         ]);
 
-        self::assertTrue($policy->isInCreationGrace($this->neverUsedCreatedDaysAgo(1), self::NOW));
-        self::assertFalse($policy->isDueForDeactivation($this->neverUsedCreatedDaysAgo(1), self::NOW));
-        self::assertFalse($policy->isDueForDeactivation($this->neverUsedCreatedDaysAgo(29), self::NOW));
+        $this->assertTrue($policy->isInCreationGrace($this->neverUsedCreatedDaysAgo(1), self::NOW));
+        $this->assertFalse($policy->isDueForDeactivation($this->neverUsedCreatedDaysAgo(1), self::NOW));
+        $this->assertFalse($policy->isDueForDeactivation($this->neverUsedCreatedDaysAgo(29), self::NOW));
     }
 
     /**
@@ -52,8 +52,8 @@ final class InactivityPolicyTest extends TestCase
             'deactivate/new_account_grace_days' => '30',
         ]);
 
-        self::assertFalse($policy->isDueForDeactivation($this->neverUsedCreatedDaysAgo(60), self::NOW));
-        self::assertTrue($policy->isDueForDeactivation($this->neverUsedCreatedDaysAgo(91), self::NOW));
+        $this->assertFalse($policy->isDueForDeactivation($this->neverUsedCreatedDaysAgo(60), self::NOW));
+        $this->assertTrue($policy->isDueForDeactivation($this->neverUsedCreatedDaysAgo(91), self::NOW));
     }
 
     public function testAWarningIsOnlySentInsideTheNoticeWindow(): void
@@ -63,13 +63,13 @@ final class InactivityPolicyTest extends TestCase
             'warn/days_before' => '7',
         ]);
 
-        self::assertFalse(
+        $this->assertFalse(
             $policy->isDueForWarning($this->signedInDaysAgo(82), self::NOW),
             'Too early: the notice would be stale by the time it mattered.'
         );
-        self::assertTrue($policy->isDueForWarning($this->signedInDaysAgo(84), self::NOW));
-        self::assertTrue($policy->isDueForWarning($this->signedInDaysAgo(89), self::NOW));
-        self::assertFalse(
+        $this->assertTrue($policy->isDueForWarning($this->signedInDaysAgo(84), self::NOW));
+        $this->assertTrue($policy->isDueForWarning($this->signedInDaysAgo(89), self::NOW));
+        $this->assertFalse(
             $policy->isDueForWarning($this->signedInDaysAgo(91), self::NOW),
             'Already past due: a warning after the fact is worse than none.'
         );
@@ -82,7 +82,7 @@ final class InactivityPolicyTest extends TestCase
             'deactivate/inactive_days' => '90',
         ]);
 
-        self::assertFalse($policy->isDueForWarning($this->signedInDaysAgo(85), self::NOW));
+        $this->assertFalse($policy->isDueForWarning($this->signedInDaysAgo(85), self::NOW));
     }
 
     /**
@@ -96,8 +96,8 @@ final class InactivityPolicyTest extends TestCase
         $warnedAt = self::NOW - (10 * self::DAY);
         $signedInSince = $this->signedInDaysAgo(1);
 
-        self::assertFalse($policy->isWarningStillValid($signedInSince, $warnedAt));
-        self::assertTrue($policy->isWarningStillValid($this->signedInDaysAgo(85), self::NOW - 3600));
+        $this->assertFalse($policy->isWarningStillValid($signedInSince, $warnedAt));
+        $this->assertTrue($policy->isWarningStillValid($this->signedInDaysAgo(85), self::NOW - 3600));
     }
 
     /**
@@ -112,11 +112,11 @@ final class InactivityPolicyTest extends TestCase
 
         $deactivatedYesterday = self::NOW - self::DAY;
 
-        self::assertFalse(
+        $this->assertFalse(
             $policy->isDueForDeletion($deactivatedYesterday, self::NOW),
             'An account deactivated yesterday cannot be deleted today, whatever its sign-in date.'
         );
-        self::assertTrue($policy->isDueForDeletion(self::NOW - (180 * self::DAY), self::NOW));
+        $this->assertTrue($policy->isDueForDeletion(self::NOW - (180 * self::DAY), self::NOW));
     }
 
     /**
@@ -127,7 +127,7 @@ final class InactivityPolicyTest extends TestCase
     {
         $policy = $this->policy(['delete/deactivated_days' => '1']);
 
-        self::assertFalse($policy->isDueForDeletion(null, self::NOW));
+        $this->assertFalse($policy->isDueForDeletion(null, self::NOW));
     }
 
     public function testDormantSecondsNeverGoNegative(): void
@@ -135,7 +135,7 @@ final class InactivityPolicyTest extends TestCase
         $policy = $this->policy();
         $future = new Candidate(1, 'u', 'e@x.test', 'n', true, self::NOW + 5000, self::NOW);
 
-        self::assertSame(0, $policy->getDormantSeconds($future, self::NOW));
+        $this->assertSame(0, $policy->getDormantSeconds($future, self::NOW));
     }
 
     /**

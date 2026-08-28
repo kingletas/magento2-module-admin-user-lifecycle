@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use RuntimeException;
 
-final class AdminSessionTerminatorTest extends TestCase
+class AdminSessionTerminatorTest extends TestCase
 {
     private AdminSessionInfoResource&MockObject $sessionResource;
     private AdminSessionTerminator $terminator;
@@ -32,12 +32,12 @@ final class AdminSessionTerminatorTest extends TestCase
      */
     public function testOnlyLiveSessionsAreEnded(): void
     {
-        $this->sessionResource->expects(self::once())
+        $this->sessionResource->expects($this->once())
             ->method('updateStatusByUserId')
             ->with(AdminSessionInfo::LOGGED_OUT_MANUALLY, 12, [AdminSessionInfo::LOGGED_IN])
             ->willReturn(3);
 
-        self::assertSame(3, $this->terminator->terminateFor(12));
+        $this->assertSame(3, $this->terminator->terminateFor(12));
     }
 
     /**
@@ -49,13 +49,13 @@ final class AdminSessionTerminatorTest extends TestCase
         $this->sessionResource->method('updateStatusByUserId')
             ->willThrowException(new RuntimeException('session table is unavailable'));
 
-        self::assertSame(0, $this->terminator->terminateFor(12));
+        $this->assertSame(0, $this->terminator->terminateFor(12));
     }
 
     public function testAnInvalidUserIdIsRefusedWithoutTouchingTheStore(): void
     {
-        $this->sessionResource->expects(self::never())->method('updateStatusByUserId');
+        $this->sessionResource->expects($this->never())->method('updateStatusByUserId');
 
-        self::assertSame(0, $this->terminator->terminateFor(0));
+        $this->assertSame(0, $this->terminator->terminateFor(0));
     }
 }

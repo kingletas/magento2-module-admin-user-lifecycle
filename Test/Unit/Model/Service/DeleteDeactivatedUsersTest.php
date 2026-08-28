@@ -24,7 +24,7 @@ use Commerce\AdminUserLifecycle\Test\Unit\Fake\TransitionBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-final class DeleteDeactivatedUsersTest extends TestCase
+class DeleteDeactivatedUsersTest extends TestCase
 {
     private const DAY = 86400;
     private const NOW = 1_760_000_000;
@@ -46,8 +46,8 @@ final class DeleteDeactivatedUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([1], $this->writer->deleted);
-        self::assertCount(1, $result->getActed());
+        $this->assertSame([1], $this->writer->deleted);
+        $this->assertCount(1, $result->getActed());
     }
 
     /**
@@ -70,9 +70,9 @@ final class DeleteDeactivatedUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([], $this->writer->deleted);
-        self::assertCount(1, $result->getSkipped());
-        self::assertStringContainsString('not due until', $result->getSkipped()[0]->getReason());
+        $this->assertSame([], $this->writer->deleted);
+        $this->assertCount(1, $result->getSkipped());
+        $this->assertStringContainsString('not due until', $result->getSkipped()[0]->getReason());
     }
 
     /**
@@ -85,10 +85,10 @@ final class DeleteDeactivatedUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([], $this->writer->deleted);
-        self::assertCount(1, $result->getSkipped());
-        self::assertSame(JournalEntry::ACTION_ADOPTED, $result->getSkipped()[0]->getAction());
-        self::assertStringContainsString('clock starts now', $result->getSkipped()[0]->getReason());
+        $this->assertSame([], $this->writer->deleted);
+        $this->assertCount(1, $result->getSkipped());
+        $this->assertSame(JournalEntry::ACTION_ADOPTED, $result->getSkipped()[0]->getAction());
+        $this->assertStringContainsString('clock starts now', $result->getSkipped()[0]->getReason());
     }
 
     /**
@@ -110,8 +110,8 @@ final class DeleteDeactivatedUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([], $this->writer->deleted);
-        self::assertSame(JournalEntry::ACTION_ADOPTED, $result->getSkipped()[0]->getAction());
+        $this->assertSame([], $this->writer->deleted);
+        $this->assertSame(JournalEntry::ACTION_ADOPTED, $result->getSkipped()[0]->getAction());
     }
 
     public function testProtectedAccountsSurviveEvenWhenDue(): void
@@ -121,8 +121,8 @@ final class DeleteDeactivatedUsersTest extends TestCase
 
         $result = $this->executeStage($finder, ['protect/usernames' => 'user1']);
 
-        self::assertSame([], $this->writer->deleted);
-        self::assertSame(
+        $this->assertSame([], $this->writer->deleted);
+        $this->assertSame(
             ProtectionPolicy::REASON_PROTECTED_USERNAME,
             $result->getSkipped()[0]->getReason()
         );
@@ -140,8 +140,8 @@ final class DeleteDeactivatedUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([], $this->writer->deleted);
-        self::assertStringContainsString('reactivated', $result->getSkipped()[0]->getReason());
+        $this->assertSame([], $this->writer->deleted);
+        $this->assertStringContainsString('reactivated', $result->getSkipped()[0]->getReason());
     }
 
     public function testADryRunDeletesNothing(): void
@@ -151,9 +151,9 @@ final class DeleteDeactivatedUsersTest extends TestCase
 
         $result = $this->executeStage($finder, [], dryRun: true);
 
-        self::assertSame([], $this->writer->deleted);
-        self::assertCount(1, $result->getActed());
-        self::assertStringContainsString('dry run', $result->getActed()[0]->getReason());
+        $this->assertSame([], $this->writer->deleted);
+        $this->assertCount(1, $result->getActed());
+        $this->assertStringContainsString('dry run', $result->getActed()[0]->getReason());
     }
 
     public function testAFailingDeleteIsContainedToTheAccountItAffected(): void
@@ -165,8 +165,8 @@ final class DeleteDeactivatedUsersTest extends TestCase
 
         $result = $this->executeStage($finder);
 
-        self::assertSame([2], $this->writer->deleted);
-        self::assertCount(1, $result->getFailed());
+        $this->assertSame([2], $this->writer->deleted);
+        $this->assertCount(1, $result->getFailed());
     }
 
     /**
@@ -180,8 +180,8 @@ final class DeleteDeactivatedUsersTest extends TestCase
 
         $result = $this->executeStage($finder, ['delete/enabled' => '0']);
 
-        self::assertFalse($result->isEnabled());
-        self::assertSame([], $this->writer->deleted);
+        $this->assertFalse($result->isEnabled());
+        $this->assertSame([], $this->writer->deleted);
     }
 
     /**

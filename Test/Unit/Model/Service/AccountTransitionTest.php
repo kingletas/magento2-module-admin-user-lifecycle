@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * The class both the scheduled pass and the REST API act through.
  */
-final class AccountTransitionTest extends TestCase
+class AccountTransitionTest extends TestCase
 {
     private const DAY = 86400;
 
@@ -41,19 +41,19 @@ final class AccountTransitionTest extends TestCase
     {
         $transition = $this->transition();
 
-        self::assertSame(
+        $this->assertSame(
             JournalEntry::ACTION_DEACTIVATED,
             $transition->deactivate($this->candidate(), 10, $this->context())->getAction()
         );
-        self::assertSame(
+        $this->assertSame(
             JournalEntry::ACTION_SKIPPED,
             $transition->deactivate($this->candidate(lastLoginDaysAgo: 2), 10, $this->context())->getAction()
         );
-        self::assertSame(
+        $this->assertSame(
             JournalEntry::ACTION_ADOPTED,
             $transition->delete($this->candidate(active: false), null, $this->context())->getAction()
         );
-        self::assertSame(
+        $this->assertSame(
             JournalEntry::ACTION_WARNED,
             $transition->warn($this->candidate(lastLoginDaysAgo: 85), null, $this->context())->getAction()
         );
@@ -68,8 +68,8 @@ final class AccountTransitionTest extends TestCase
 
         $entry = $this->transition()->deactivate($this->candidate(), 10, $this->context());
 
-        self::assertSame(JournalEntry::ACTION_FAILED, $entry->getAction());
-        self::assertStringContainsString('deactivation failed', $entry->getReason());
+        $this->assertSame(JournalEntry::ACTION_FAILED, $entry->getAction());
+        $this->assertStringContainsString('deactivation failed', $entry->getReason());
     }
 
     /**
@@ -82,8 +82,8 @@ final class AccountTransitionTest extends TestCase
 
         $entry = $this->transition()->deactivate($this->candidate(), 10, $this->context());
 
-        self::assertSame(JournalEntry::ACTION_SKIPPED, $entry->getAction());
-        self::assertSame('reactivated while the pass was running', $entry->getReason());
+        $this->assertSame(JournalEntry::ACTION_SKIPPED, $entry->getAction());
+        $this->assertSame('reactivated while the pass was running', $entry->getReason());
     }
 
     public function testADryRunDecidesEverythingAndWritesNothing(): void
@@ -94,11 +94,11 @@ final class AccountTransitionTest extends TestCase
         $deactivated = $transition->deactivate($this->candidate(), 10, $context);
         $warned = $transition->warn($this->candidate(lastLoginDaysAgo: 85), null, $context);
 
-        self::assertSame(JournalEntry::ACTION_DEACTIVATED, $deactivated->getAction());
-        self::assertStringContainsString('not applied: dry run', $deactivated->getReason());
-        self::assertStringContainsString('no mail sent: dry run', $warned->getReason());
-        self::assertSame([], $this->writer->deactivated);
-        self::assertSame([], $this->notifier->warned);
+        $this->assertSame(JournalEntry::ACTION_DEACTIVATED, $deactivated->getAction());
+        $this->assertStringContainsString('not applied: dry run', $deactivated->getReason());
+        $this->assertStringContainsString('no mail sent: dry run', $warned->getReason());
+        $this->assertSame([], $this->writer->deactivated);
+        $this->assertSame([], $this->notifier->warned);
     }
 
     /**
@@ -110,8 +110,8 @@ final class AccountTransitionTest extends TestCase
 
         $entry = $this->transition()->deactivate($this->candidate(), 10, $this->context());
 
-        self::assertSame([1], $this->notifier->terminated);
-        self::assertStringContainsString('2 live session(s) ended', $entry->getReason());
+        $this->assertSame([1], $this->notifier->terminated);
+        $this->assertStringContainsString('2 live session(s) ended', $entry->getReason());
     }
 
     /**
@@ -123,8 +123,8 @@ final class AccountTransitionTest extends TestCase
 
         $entry = $this->transition()->warn($this->candidate(lastLoginDaysAgo: 85), null, $this->context());
 
-        self::assertSame(JournalEntry::ACTION_FAILED, $entry->getAction());
-        self::assertSame('warning was not delivered', $entry->getReason());
+        $this->assertSame(JournalEntry::ACTION_FAILED, $entry->getAction());
+        $this->assertSame('warning was not delivered', $entry->getReason());
     }
 
     public function testAnAccountWithNoAddressIsAFailureRatherThanASkip(): void
@@ -135,8 +135,8 @@ final class AccountTransitionTest extends TestCase
             $this->context()
         );
 
-        self::assertSame(JournalEntry::ACTION_FAILED, $entry->getAction());
-        self::assertSame('no email address on the account, cannot warn', $entry->getReason());
+        $this->assertSame(JournalEntry::ACTION_FAILED, $entry->getAction());
+        $this->assertSame('no email address on the account, cannot warn', $entry->getReason());
     }
 
     /**

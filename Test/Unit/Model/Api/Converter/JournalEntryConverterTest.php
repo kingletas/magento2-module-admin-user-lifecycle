@@ -12,21 +12,21 @@ use Commerce\AdminUserLifecycle\Model\Api\Converter\JournalEntryConverter;
 use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use PHPUnit\Framework\TestCase;
 
-final class JournalEntryConverterTest extends TestCase
+class JournalEntryConverterTest extends TestCase
 {
     public function testARowKeepsEveryFieldAndGainsAReadableDate(): void
     {
         $converted = $this->converter()->convert($this->entry(entryId: 41));
 
-        self::assertSame(41, $converted->getEntryId());
-        self::assertSame(7, $converted->getUserId());
-        self::assertSame('dormant.user', $converted->getUsername());
-        self::assertSame('dormant@example.com', $converted->getEmail());
-        self::assertSame(JournalEntry::ACTION_DEACTIVATED, $converted->getAction());
-        self::assertSame('no sign-in for 200 days', $converted->getReason());
-        self::assertSame(JournalEntry::ACTOR_CRON, $converted->getActor());
-        self::assertFalse($converted->isDryRun());
-        self::assertSame('2026-08-27T14:30:00Z', $converted->getOccurredAt());
+        $this->assertSame(41, $converted->getEntryId());
+        $this->assertSame(7, $converted->getUserId());
+        $this->assertSame('dormant.user', $converted->getUsername());
+        $this->assertSame('dormant@example.com', $converted->getEmail());
+        $this->assertSame(JournalEntry::ACTION_DEACTIVATED, $converted->getAction());
+        $this->assertSame('no sign-in for 200 days', $converted->getReason());
+        $this->assertSame(JournalEntry::ACTOR_CRON, $converted->getActor());
+        $this->assertFalse($converted->isDryRun());
+        $this->assertSame('2026-08-27T14:30:00Z', $converted->getOccurredAt());
     }
 
     /**
@@ -35,17 +35,17 @@ final class JournalEntryConverterTest extends TestCase
      */
     public function testAnEntryThatHasNotBeenWrittenYetReportsNoId(): void
     {
-        self::assertSame(0, $this->converter()->convert($this->entry())->getEntryId());
+        $this->assertSame(0, $this->converter()->convert($this->entry())->getEntryId());
     }
 
     public function testASimulatedEntrySaysSo(): void
     {
-        self::assertTrue($this->converter()->convert($this->entry(dryRun: true))->isDryRun());
+        $this->assertTrue($this->converter()->convert($this->entry(dryRun: true))->isDryRun());
     }
 
     public function testConvertingNothingIsNotAnError(): void
     {
-        self::assertSame([], $this->converter()->convertAll([]));
+        $this->assertSame([], $this->converter()->convertAll([]));
     }
 
     public function testAPageKeepsItsOrder(): void
@@ -56,7 +56,7 @@ final class JournalEntryConverterTest extends TestCase
             $this->entry(entryId: 3),
         ]);
 
-        self::assertSame([1, 2, 3], array_map(static fn ($row): int => $row->getEntryId(), $converted));
+        $this->assertSame([1, 2, 3], array_map(static fn ($row): int => $row->getEntryId(), $converted));
     }
 
     private function converter(): JournalEntryConverter

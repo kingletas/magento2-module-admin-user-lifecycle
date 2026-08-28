@@ -36,7 +36,7 @@ use Psr\Log\NullLogger;
 /**
  * An administrator leaves, and eighteen months later their account is gone.
  */
-final class RetirementJourneyTest extends TestCase
+class RetirementJourneyTest extends TestCase
 {
     private const SECTION = 'commerce_adminuserlifecycle';
     private const DAY = 86400;
@@ -100,20 +100,20 @@ final class RetirementJourneyTest extends TestCase
 
         // Day 170: inside the warning window, not yet due for deactivation.
         $this->runPass();
-        self::assertSame([2], array_column($this->warnings, 'userId'));
-        self::assertTrue($this->directory->isActive(2));
+        $this->assertSame([2], array_column($this->warnings, 'userId'));
+        $this->assertTrue($this->directory->isActive(2));
 
         // Day 181: past the dormancy threshold.
         $this->passTime(11);
         $this->runPass();
-        self::assertFalse($this->directory->isActive(2), 'The account should have been deactivated.');
-        self::assertContains(2, $this->terminated, 'And its sessions ended.');
+        $this->assertFalse($this->directory->isActive(2), 'The account should have been deactivated.');
+        $this->assertContains(2, $this->terminated, 'And its sessions ended.');
 
         // Day 272: ninety days deactivated.
         $this->passTime(91);
         $this->runPass();
-        self::assertFalse($this->directory->exists(2), 'The account should have been deleted.');
-        self::assertSame([1], $this->directory->userIds());
+        $this->assertFalse($this->directory->exists(2), 'The account should have been deleted.');
+        $this->assertSame([1], $this->directory->userIds());
     }
 
     public function testAnAccountInDailyUseIsLeftEntirelyAlone(): void
@@ -123,8 +123,8 @@ final class RetirementJourneyTest extends TestCase
         $this->passTime(400);
         $this->runPass();
 
-        self::assertSame([], $this->warnings);
-        self::assertTrue($this->directory->isActive(1));
+        $this->assertSame([], $this->warnings);
+        $this->assertTrue($this->directory->isActive(1));
     }
 
     /**
@@ -137,8 +137,8 @@ final class RetirementJourneyTest extends TestCase
 
         $this->runPass();
 
-        self::assertSame([], $this->warnings);
-        self::assertTrue($this->directory->isActive(2));
+        $this->assertSame([], $this->warnings);
+        $this->assertTrue($this->directory->isActive(2));
     }
 
     /**
@@ -152,7 +152,7 @@ final class RetirementJourneyTest extends TestCase
 
         $this->runPass();
 
-        self::assertFalse($this->directory->isActive(2));
+        $this->assertFalse($this->directory->isActive(2));
     }
 
     /**
@@ -165,8 +165,8 @@ final class RetirementJourneyTest extends TestCase
 
         $this->runPass();
 
-        self::assertTrue($this->directory->isActive(1), 'Retiring the last administrator locks everybody out.');
-        self::assertSame(
+        $this->assertTrue($this->directory->isActive(1), 'Retiring the last administrator locks everybody out.');
+        $this->assertSame(
             [JournalEntry::ACTION_SKIPPED],
             $this->journalActionsFor(1),
             'And the refusal is recorded rather than being silent.'
@@ -185,7 +185,7 @@ final class RetirementJourneyTest extends TestCase
 
         $stillActive = array_filter([1, 2], fn (int $id): bool => $this->directory->isActive($id));
 
-        self::assertCount(1, $stillActive, 'Exactly one administrator must survive the pass.');
+        $this->assertCount(1, $stillActive, 'Exactly one administrator must survive the pass.');
     }
 
     /**
@@ -198,9 +198,9 @@ final class RetirementJourneyTest extends TestCase
 
         $report = $this->runPass(dryRun: true);
 
-        self::assertTrue($this->directory->isActive(2), 'A dry run must not deactivate anybody.');
-        self::assertSame([], $this->warnings, 'Nor send anybody an email.');
-        self::assertTrue($report->hasChanges(), 'And it must still report what it would have done.');
+        $this->assertTrue($this->directory->isActive(2), 'A dry run must not deactivate anybody.');
+        $this->assertSame([], $this->warnings, 'Nor send anybody an email.');
+        $this->assertTrue($report->hasChanges(), 'And it must still report what it would have done.');
     }
 
     /**
@@ -214,8 +214,8 @@ final class RetirementJourneyTest extends TestCase
 
         $this->runPass();
 
-        self::assertSame([], $this->warnings);
-        self::assertFalse($this->directory->isActive(2), 'Deactivation should still have run.');
+        $this->assertSame([], $this->warnings);
+        $this->assertFalse($this->directory->isActive(2), 'Deactivation should still have run.');
     }
 
     /**
@@ -228,13 +228,13 @@ final class RetirementJourneyTest extends TestCase
         $this->activeAdmin(2, 'left-the-company', lastLoginDaysAgo: 400);
 
         $this->runPass();
-        self::assertFalse($this->directory->isActive(2));
+        $this->assertFalse($this->directory->isActive(2));
 
         // Halfway through the ninety-day window.
         $this->passTime(45);
         $this->runPass();
 
-        self::assertTrue($this->directory->exists(2), 'Still inside its recovery window.');
+        $this->assertTrue($this->directory->exists(2), 'Still inside its recovery window.');
     }
 
     /**
@@ -248,10 +248,10 @@ final class RetirementJourneyTest extends TestCase
 
         $this->runPass();
 
-        self::assertContains(JournalEntry::ACTION_DEACTIVATED, $this->journalActionsFor(2));
+        $this->assertContains(JournalEntry::ACTION_DEACTIVATED, $this->journalActionsFor(2));
 
         foreach ($this->journal as $entry) {
-            self::assertSame('cron', $entry->getActor(), 'Every entry names who did it.');
+            $this->assertSame('cron', $entry->getActor(), 'Every entry names who did it.');
         }
     }
 
@@ -261,8 +261,8 @@ final class RetirementJourneyTest extends TestCase
         $this->activeAdmin(1, 'still-here', lastLoginDaysAgo: 1);
         $this->activeAdmin(2, 'left-the-company', lastLoginDaysAgo: 400);
 
-        self::assertFalse($this->runner()->isEnabled());
-        self::assertTrue($this->directory->isActive(2));
+        $this->assertFalse($this->runner()->isEnabled());
+        $this->assertTrue($this->directory->isActive(2));
     }
 
     /**

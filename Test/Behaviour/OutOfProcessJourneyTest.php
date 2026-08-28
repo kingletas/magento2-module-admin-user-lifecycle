@@ -39,7 +39,7 @@ use Psr\Log\NullLogger;
 /**
  * Retirement driven from outside the store.
  */
-final class OutOfProcessJourneyTest extends TestCase
+class OutOfProcessJourneyTest extends TestCase
 {
     private const SECTION = 'commerce_adminusers';
     private const DAY = 86400;
@@ -98,9 +98,9 @@ final class OutOfProcessJourneyTest extends TestCase
     {
         $due = $this->candidates(LifecycleCandidateProviderInterface::STAGE_DEACTIVATE);
 
-        self::assertSame([1, 2], array_keys($due), 'Both dormant accounts are visible.');
-        self::assertNull($due[1]->getBlockedReason());
-        self::assertSame(
+        $this->assertSame([1, 2], array_keys($due), 'Both dormant accounts are visible.');
+        $this->assertNull($due[1]->getBlockedReason());
+        $this->assertSame(
             ProtectionPolicy::REASON_PROTECTED_USERNAME,
             $due[2]->getBlockedReason(),
             'The store says why it will refuse before anybody asks it to.'
@@ -109,20 +109,20 @@ final class OutOfProcessJourneyTest extends TestCase
         $applied = $this->management()->deactivate(1, dryRun: false);
         $refused = $this->management()->deactivate(2, dryRun: false);
 
-        self::assertTrue($applied->isApplied());
-        self::assertFalse($refused->isApplied());
-        self::assertSame([1], $this->directory->deactivated);
-        self::assertTrue($this->directory->isActive(2), 'The protected account was never touched.');
+        $this->assertTrue($applied->isApplied());
+        $this->assertFalse($refused->isApplied());
+        $this->assertSame([1], $this->directory->deactivated);
+        $this->assertTrue($this->directory->isActive(2), 'The protected account was never touched.');
 
         $entries = $this->reader()->getEntries();
 
-        self::assertSame(
+        $this->assertSame(
             [JournalEntry::ACTION_DEACTIVATED, JournalEntry::ACTION_SKIPPED],
             array_map(static fn ($entry): string => $entry->getAction(), $entries),
             'The refusal is in the record, not only the change.'
         );
-        self::assertSame(JournalEntry::ACTOR_API, $entries[0]->getActor());
-        self::assertSame(
+        $this->assertSame(JournalEntry::ACTOR_API, $entries[0]->getActor());
+        $this->assertSame(
             [LifecycleEventDispatcher::EVENT_DEACTIVATED],
             $this->events->names(),
             'One account changed, so one thing was announced.'
@@ -140,24 +140,24 @@ final class OutOfProcessJourneyTest extends TestCase
         $this->passTime(30);
         $soon = $this->candidates(LifecycleCandidateProviderInterface::STAGE_DELETE);
 
-        self::assertFalse($soon[1]->isDue());
-        self::assertNotNull($soon[1]->getDeactivatedAt(), 'The clock started when the API switched it off.');
+        $this->assertFalse($soon[1]->isDue());
+        $this->assertNotNull($soon[1]->getDeactivatedAt(), 'The clock started when the API switched it off.');
 
         $refused = $this->management()->delete(1, dryRun: false);
 
-        self::assertFalse($refused->isApplied());
-        self::assertStringContainsString('not due until', $refused->getReason());
+        $this->assertFalse($refused->isApplied());
+        $this->assertStringContainsString('not due until', $refused->getReason());
 
         $this->passTime(70);
         $overdue = $this->candidates(LifecycleCandidateProviderInterface::STAGE_DELETE);
 
-        self::assertTrue($overdue[1]->isDue());
+        $this->assertTrue($overdue[1]->isDue());
 
         $deleted = $this->management()->delete(1, dryRun: false);
 
-        self::assertTrue($deleted->isApplied());
-        self::assertFalse($this->directory->exists(1));
-        self::assertContains(LifecycleEventDispatcher::EVENT_DELETED, $this->events->names());
+        $this->assertTrue($deleted->isApplied());
+        $this->assertFalse($this->directory->exists(1));
+        $this->assertContains(LifecycleEventDispatcher::EVENT_DELETED, $this->events->names());
     }
 
     /**
@@ -168,16 +168,16 @@ final class OutOfProcessJourneyTest extends TestCase
     {
         $this->management()->deactivate(1);
 
-        self::assertSame([], $this->directory->deactivated);
+        $this->assertSame([], $this->directory->deactivated);
 
         $this->passTime(200);
 
-        self::assertSame(
+        $this->assertSame(
             [],
             $this->candidates(LifecycleCandidateProviderInterface::STAGE_DELETE),
             'The account is still active, so it is not a deletion candidate at all.'
         );
-        self::assertSame([], $this->events->dispatched);
+        $this->assertSame([], $this->events->dispatched);
     }
 
     /**
@@ -190,7 +190,7 @@ final class OutOfProcessJourneyTest extends TestCase
 
         // Still answerable: seeing what would happen is the point of installing
         // this module before switching it on.
-        self::assertNotSame([], $this->candidates(LifecycleCandidateProviderInterface::STAGE_DEACTIVATE));
+        $this->assertNotSame([], $this->candidates(LifecycleCandidateProviderInterface::STAGE_DEACTIVATE));
 
         $this->expectException(LocalizedException::class);
 
@@ -206,10 +206,10 @@ final class OutOfProcessJourneyTest extends TestCase
 
         $report = $this->management()->run(dryRun: false);
 
-        self::assertSame([1, 2], $offered);
-        self::assertSame([1], $this->directory->deactivated, 'The protected account was offered and refused.');
-        self::assertTrue($report->hasChanges());
-        self::assertFalse($report->hasFailures());
+        $this->assertSame([1, 2], $offered);
+        $this->assertSame([1], $this->directory->deactivated, 'The protected account was offered and refused.');
+        $this->assertTrue($report->hasChanges());
+        $this->assertFalse($report->hasFailures());
 
         $stages = [];
 
@@ -217,8 +217,8 @@ final class OutOfProcessJourneyTest extends TestCase
             $stages[$stage->getStage()] = $stage;
         }
 
-        self::assertSame(1, $stages['deactivate']->getActed());
-        self::assertSame(1, $stages['deactivate']->getSkipped());
+        $this->assertSame(1, $stages['deactivate']->getActed());
+        $this->assertSame(1, $stages['deactivate']->getSkipped());
     }
 
     /**

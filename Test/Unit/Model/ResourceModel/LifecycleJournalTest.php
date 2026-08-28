@@ -15,7 +15,7 @@ use Magento\Framework\DB\Select;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-final class LifecycleJournalTest extends TestCase
+class LifecycleJournalTest extends TestCase
 {
     private AdapterInterface&MockObject $connection;
     private LifecycleJournal $journal;
@@ -37,11 +37,11 @@ final class LifecycleJournalTest extends TestCase
      */
     public function testAWholePassIsWrittenInOneStatement(): void
     {
-        $this->connection->expects(self::once())
+        $this->connection->expects($this->once())
             ->method('insertMultiple')
             ->with(
                 'pfx_' . LifecycleJournal::TABLE,
-                self::callback(static fn (array $rows): bool => count($rows) === 3)
+                $this->callback(static fn (array $rows): bool => count($rows) === 3)
             );
 
         $this->journal->recordAll([$this->entry(1), $this->entry(2), $this->entry(3)]);
@@ -49,7 +49,7 @@ final class LifecycleJournalTest extends TestCase
 
     public function testAnEmptyPassWritesNothing(): void
     {
-        $this->connection->expects(self::never())->method('insertMultiple');
+        $this->connection->expects($this->never())->method('insertMultiple');
 
         $this->journal->recordAll([]);
     }
@@ -73,9 +73,9 @@ final class LifecycleJournalTest extends TestCase
 
         $this->journal->getDeactivatedAt([1, 2]);
 
-        self::assertArrayHasKey('dry_run = ?', $conditions);
-        self::assertSame(0, $conditions['dry_run = ?']);
-        self::assertSame(
+        $this->assertArrayHasKey('dry_run = ?', $conditions);
+        $this->assertSame(0, $conditions['dry_run = ?']);
+        $this->assertSame(
             [JournalEntry::ACTION_DEACTIVATED, JournalEntry::ACTION_ADOPTED],
             $conditions['action IN (?)']
         );
@@ -94,16 +94,16 @@ final class LifecycleJournalTest extends TestCase
 
         $result = $this->journal->getDeactivatedAt([1, 2]);
 
-        self::assertArrayNotHasKey(1, $result);
-        self::assertSame(strtotime('2026-01-01 00:00:00 UTC'), $result[2]);
+        $this->assertArrayNotHasKey(1, $result);
+        $this->assertSame(strtotime('2026-01-01 00:00:00 UTC'), $result[2]);
     }
 
     public function testNoQueryRunsForAnEmptyUserList(): void
     {
-        $this->connection->expects(self::never())->method('select');
+        $this->connection->expects($this->never())->method('select');
 
-        self::assertSame([], $this->journal->getDeactivatedAt([]));
-        self::assertSame([], $this->journal->getWarnedAt([0, null ?? 0]));
+        $this->assertSame([], $this->journal->getDeactivatedAt([]));
+        $this->assertSame([], $this->journal->getWarnedAt([0, null ?? 0]));
     }
 
     /**
@@ -117,9 +117,9 @@ final class LifecycleJournalTest extends TestCase
         $statement = $this->createMock(\Zend_Db_Statement_Interface::class);
         $statement->method('rowCount')->willReturnOnConsecutiveCalls(5000, 5000, 120);
 
-        $this->connection->expects(self::exactly(3))->method('query')->willReturn($statement);
+        $this->connection->expects($this->exactly(3))->method('query')->willReturn($statement);
 
-        self::assertSame(10120, $this->journal->prune(1_700_000_000));
+        $this->assertSame(10120, $this->journal->prune(1_700_000_000));
     }
 
     private function expectSelect(): Select&MockObject
