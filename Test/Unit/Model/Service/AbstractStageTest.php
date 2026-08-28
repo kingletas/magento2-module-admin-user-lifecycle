@@ -13,7 +13,7 @@ use Commerce\AdminUserLifecycle\Model\Candidate;
 use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Model\Service\AbstractStage;
 use Commerce\AdminUserLifecycle\Model\StageResult;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
@@ -22,6 +22,8 @@ use Psr\Log\NullLogger;
  */
 class AbstractStageTest extends TestCase
 {
+    use ShippedConfig;
+
     public function testItWalksEveryPageUntilOneComesBackShort(): void
     {
         // The batch size is what tells the loop a short page is the last one,
@@ -114,7 +116,7 @@ class AbstractStageTest extends TestCase
      */
     private function stage(array $overrides = []): object
     {
-        $config = ConfigBuilder::build($overrides);
+        $config = $this->config($overrides);
 
         return new class (new StageContext($config, new NullLogger(), new JournalEntryMapper())) extends AbstractStage {
             public function getName(): string

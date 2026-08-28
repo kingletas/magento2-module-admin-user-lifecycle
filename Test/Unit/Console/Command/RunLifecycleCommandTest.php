@@ -15,7 +15,7 @@ use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Model\RunReport;
 use Commerce\AdminUserLifecycle\Model\Service\LifecycleRunner;
 use Commerce\AdminUserLifecycle\Model\StageResult;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Magento\Framework\App\State;
 use Magento\Framework\Escaper;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -26,6 +26,8 @@ use RuntimeException;
 
 class RunLifecycleCommandTest extends TestCase
 {
+    use ShippedConfig;
+
     private const NOW = 1_760_000_000;
 
     private LifecycleRunner&MockObject $runner;
@@ -141,7 +143,7 @@ class RunLifecycleCommandTest extends TestCase
         $state = $this->createMock(State::class);
 
         $command = new RunLifecycleCommand(
-            ConfigBuilder::build($overrides),
+            $this->config($overrides),
             $this->runner,
             $this->reporter,
             new ReportFormatter(new Escaper()),

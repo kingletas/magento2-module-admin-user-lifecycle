@@ -11,7 +11,7 @@ use Commerce\AdminUserLifecycle\Model\Candidate;
 use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Model\Service\AccountTransition;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingNotifier;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingWriter;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\TransitionBuilder;
@@ -22,6 +22,8 @@ use PHPUnit\Framework\TestCase;
  */
 class AccountTransitionTest extends TestCase
 {
+    use ShippedConfig;
+
     private const DAY = 86400;
 
     private RecordingWriter $writer;
@@ -144,7 +146,7 @@ class AccountTransitionTest extends TestCase
      */
     private function transition(array $overrides = []): AccountTransition
     {
-        return TransitionBuilder::build(ConfigBuilder::build($overrides), $this->writer, $this->notifier);
+        return TransitionBuilder::build($this->config($overrides), $this->writer, $this->notifier);
     }
 
     private function context(bool $dryRun = false): RunContext

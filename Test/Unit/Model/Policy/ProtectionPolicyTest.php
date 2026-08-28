@@ -9,11 +9,13 @@ namespace Commerce\AdminUserLifecycle\Test\Unit\Model\Policy;
 
 use Commerce\AdminUserLifecycle\Model\Candidate;
 use Commerce\AdminUserLifecycle\Model\Policy\ProtectionPolicy;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use PHPUnit\Framework\TestCase;
 
 class ProtectionPolicyTest extends TestCase
 {
+    use ShippedConfig;
+
     public function testAnActiveAccountWithNothingAgainstItMayBeDeactivated(): void
     {
         $policy = $this->policy();
@@ -105,7 +107,7 @@ class ProtectionPolicyTest extends TestCase
      */
     private function policy(array $overrides = []): ProtectionPolicy
     {
-        return new ProtectionPolicy(ConfigBuilder::build($overrides));
+        return new ProtectionPolicy($this->config($overrides));
     }
 
     private function candidate(

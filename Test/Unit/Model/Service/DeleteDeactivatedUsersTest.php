@@ -16,7 +16,7 @@ use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Model\Service\DeleteDeactivatedUsers;
 use Commerce\AdminUserLifecycle\Model\Service\StageContext;
 use Commerce\AdminUserLifecycle\Model\StageResult;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryAdminUserFinder;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingWriter;
@@ -26,6 +26,8 @@ use Psr\Log\NullLogger;
 
 class DeleteDeactivatedUsersTest extends TestCase
 {
+    use ShippedConfig;
+
     private const DAY = 86400;
     private const NOW = 1_760_000_000;
 
@@ -192,7 +194,7 @@ class DeleteDeactivatedUsersTest extends TestCase
         array $overrides = [],
         bool $dryRun = false
     ): StageResult {
-        $config = ConfigBuilder::build(array_merge(['delete/deactivated_days' => '180'], $overrides));
+        $config = $this->config(array_merge(['delete/deactivated_days' => '180'], $overrides));
 
         $stage = new DeleteDeactivatedUsers(
             new StageContext($config, new NullLogger(), new JournalEntryMapper()),

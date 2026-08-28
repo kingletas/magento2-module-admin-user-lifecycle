@@ -9,11 +9,13 @@ namespace Commerce\AdminUserLifecycle\Test\Unit\Model\Policy;
 
 use Commerce\AdminUserLifecycle\Model\Candidate;
 use Commerce\AdminUserLifecycle\Model\Policy\InactivityPolicy;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use PHPUnit\Framework\TestCase;
 
 class InactivityPolicyTest extends TestCase
 {
+    use ShippedConfig;
+
     private const DAY = 86400;
     private const NOW = 1_760_000_000;
 
@@ -143,7 +145,7 @@ class InactivityPolicyTest extends TestCase
      */
     private function policy(array $overrides = []): InactivityPolicy
     {
-        return new InactivityPolicy(ConfigBuilder::build($overrides));
+        return new InactivityPolicy($this->config($overrides));
     }
 
     private function signedInDaysAgo(int $days): Candidate

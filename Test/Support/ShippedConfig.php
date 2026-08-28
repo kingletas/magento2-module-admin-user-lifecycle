@@ -5,21 +5,20 @@
  */
 declare(strict_types=1);
 
-namespace Commerce\AdminUserLifecycle\Test\Unit\Fake;
+namespace Commerce\AdminUserLifecycle\Test\Support;
 
 use Commerce\AdminUserLifecycle\Model\Config;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
- * Builds a real `Config` over an array, with the module's shipped defaults.
+ * A real `Config` over the values `etc/config.xml` ships, so a test that does
+ * not care about a setting still reads what a fresh install would.
  */
-class ConfigBuilder
+trait ShippedConfig
 {
     public const SECTION = 'commerce_adminusers';
 
     /**
-     * The values `etc/config.xml` ships, so the tests and the defaults cannot
-     * drift apart without a test noticing.
-     *
      * @var array<string, string>
      */
     private const DEFAULTS = [
@@ -46,15 +45,7 @@ class ConfigBuilder
     /**
      * @param array<string, string|int|null> $overrides Section-relative paths.
      */
-    public static function build(array $overrides = []): Config
-    {
-        return new Config(self::scopeConfig($overrides), self::SECTION);
-    }
-
-    /**
-     * @param array<string, string|int|null> $overrides
-     */
-    public static function scopeConfig(array $overrides = []): ArrayScopeConfig
+    private function config(array $overrides = []): Config
     {
         $values = [];
 
@@ -62,6 +53,14 @@ class ConfigBuilder
             $values[self::SECTION . '/' . $path] = $value;
         }
 
-        return new ArrayScopeConfig($values);
+        $scopeConfig = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfig->method('getValue')->willReturnCallback(
+            static fn (string $path): mixed => $values[$path] ?? null
+        );
+        $scopeConfig->method('isSetFlag')->willReturnCallback(
+            static fn (string $path): bool => !in_array($values[$path] ?? null, [null, '', '0', 0, false], true)
+        );
+
+        return new Config($scopeConfig, self::SECTION);
     }
 }

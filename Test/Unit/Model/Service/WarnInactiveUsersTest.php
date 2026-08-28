@@ -16,7 +16,7 @@ use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Model\Service\StageContext;
 use Commerce\AdminUserLifecycle\Model\Service\WarnInactiveUsers;
 use Commerce\AdminUserLifecycle\Model\StageResult;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryAdminUserFinder;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingNotifier;
@@ -26,6 +26,8 @@ use Psr\Log\NullLogger;
 
 class WarnInactiveUsersTest extends TestCase
 {
+    use ShippedConfig;
+
     private const DAY = 86400;
     private const NOW = 1_760_000_000;
 
@@ -197,7 +199,7 @@ class WarnInactiveUsersTest extends TestCase
         array $overrides = [],
         bool $dryRun = false
     ): StageResult {
-        $config = ConfigBuilder::build(
+        $config = $this->config(
             array_merge(['deactivate/inactive_days' => '90', 'warn/days_before' => '7'], $overrides)
         );
 

@@ -15,7 +15,7 @@ use Commerce\AdminUserLifecycle\Model\Config;
 use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\Policy\InactivityPolicy;
 use Commerce\AdminUserLifecycle\Model\Policy\ProtectionPolicy;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryAdminUserFinder;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use Magento\Framework\Exception\InputException;
@@ -23,6 +23,8 @@ use PHPUnit\Framework\TestCase;
 
 class CandidateProviderTest extends TestCase
 {
+    use ShippedConfig;
+
     private const DAY = 86400;
 
     private InMemoryAdminUserFinder $finder;
@@ -224,7 +226,7 @@ class CandidateProviderTest extends TestCase
      */
     private function provider(array $overrides = []): CandidateProvider
     {
-        $config = ConfigBuilder::build($overrides);
+        $config = $this->config($overrides);
 
         return new CandidateProvider(
             $config,

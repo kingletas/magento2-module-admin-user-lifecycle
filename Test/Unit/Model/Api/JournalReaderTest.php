@@ -11,13 +11,15 @@ use Commerce\AdminUserLifecycle\Model\Api\Converter\Instant;
 use Commerce\AdminUserLifecycle\Model\Api\Converter\JournalEntryConverter;
 use Commerce\AdminUserLifecycle\Model\Api\JournalReader;
 use Commerce\AdminUserLifecycle\Model\JournalEntry;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use Magento\Framework\Exception\InputException;
 use PHPUnit\Framework\TestCase;
 
 class JournalReaderTest extends TestCase
 {
+    use ShippedConfig;
+
     private InMemoryJournal $journal;
 
     private int $now;
@@ -149,7 +151,7 @@ class JournalReaderTest extends TestCase
         $instant = new Instant();
 
         return new JournalReader(
-            ConfigBuilder::build($overrides),
+            $this->config($overrides),
             $this->journal,
             new JournalEntryConverter($instant),
             $instant

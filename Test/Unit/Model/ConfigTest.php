@@ -8,13 +8,15 @@ declare(strict_types=1);
 namespace Commerce\AdminUserLifecycle\Test\Unit\Model;
 
 use Commerce\AdminUserLifecycle\Model\Config;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase
 {
+    use ShippedConfig;
+
     private const DAY = 86400;
 
     public function testTheSectionComesFromTheConstructorNotAConstant(): void
@@ -27,7 +29,7 @@ class ConfigTest extends TestCase
 
     public function testAnAbsentDryRunSettingReadsAsADryRun(): void
     {
-        $config = new Config($this->scopeConfig([]), ConfigBuilder::SECTION);
+        $config = new Config($this->scopeConfig([]), self::SECTION);
 
         $this->assertTrue(
             $config->isDryRun(),
@@ -38,7 +40,7 @@ class ConfigTest extends TestCase
     #[DataProvider('dryRunProvider')]
     public function testDryRunCoercion(mixed $stored, bool $expected): void
     {
-        $config = ConfigBuilder::build(['general/dry_run' => $stored]);
+        $config = $this->config(['general/dry_run' => $stored]);
 
         $this->assertSame($expected, $config->isDryRun());
     }
@@ -58,7 +60,7 @@ class ConfigTest extends TestCase
 
     public function testThresholdsAreExpressedInSeconds(): void
     {
-        $config = ConfigBuilder::build([
+        $config = $this->config([
             'warn/days_before' => '3',
             'deactivate/inactive_days' => '45',
             'delete/deactivated_days' => '200',
@@ -76,7 +78,7 @@ class ConfigTest extends TestCase
     #[DataProvider('rejectedThresholdProvider')]
     public function testAZeroOrNegativeInactivityThresholdFallsBackToTheDefault(mixed $stored): void
     {
-        $config = ConfigBuilder::build(['deactivate/inactive_days' => $stored]);
+        $config = $this->config(['deactivate/inactive_days' => $stored]);
 
         $this->assertSame(Config::DEFAULT_INACTIVE_DAYS * self::DAY, $config->getInactiveSeconds());
     }
@@ -100,7 +102,7 @@ class ConfigTest extends TestCase
      */
     public function testZeroCreationGraceIsHonoured(): void
     {
-        $config = ConfigBuilder::build(['deactivate/new_account_grace_days' => '0']);
+        $config = $this->config(['deactivate/new_account_grace_days' => '0']);
 
         $this->assertSame(0, $config->getNewAccountGraceSeconds());
     }
@@ -108,7 +110,7 @@ class ConfigTest extends TestCase
     public function testMinimumActiveAdministratorsCanNeverBeDrivenBelowOne(): void
     {
         foreach (['0', '-3', '', 'none'] as $stored) {
-            $config = ConfigBuilder::build(['protect/min_active_admins' => $stored]);
+            $config = $this->config(['protect/min_active_admins' => $stored]);
 
             $this->assertGreaterThanOrEqual(
                 Config::ABSOLUTE_MIN_ACTIVE_ADMINS,
@@ -120,7 +122,7 @@ class ConfigTest extends TestCase
 
     public function testProtectedUsernamesAcceptCommasAndNewlinesAndAreLowerCased(): void
     {
-        $config = ConfigBuilder::build([
+        $config = $this->config([
             'protect/usernames' => "Admin, break-glass\nINTEGRATION\n\n , ,deploy",
         ]);
 
@@ -129,7 +131,7 @@ class ConfigTest extends TestCase
 
     public function testProtectedRoleIdsIgnoreAnythingThatIsNotAPositiveInteger(): void
     {
-        $config = ConfigBuilder::build(['protect/role_ids' => '3,,abc,-1,0,7,3']);
+        $config = $this->config(['protect/role_ids' => '3,,abc,-1,0,7,3']);
 
         $this->assertSame([3, 7], $config->getProtectedRoleIds());
     }
@@ -140,7 +142,7 @@ class ConfigTest extends TestCase
      */
     public function testReportRecipientsDropInvalidAddressesRatherThanFailing(): void
     {
-        $config = ConfigBuilder::build([
+        $config = $this->config([
             'report/recipients' => "ops@example.com,not-an-address\nsecurity@example.com,ops@example.com",
         ]);
 
@@ -153,7 +155,7 @@ class ConfigTest extends TestCase
      */
     public function testJournalRetentionIsFlooredByTheDeletionWindow(): void
     {
-        $config = ConfigBuilder::build([
+        $config = $this->config([
             'delete/deactivated_days' => '365',
             'report/journal_retention_days' => '30',
         ]);
@@ -167,10 +169,10 @@ class ConfigTest extends TestCase
 
     public function testBatchSizeIsBounded(): void
     {
-        $this->assertSame(10000, ConfigBuilder::build(['general/batch_size' => '999999'])->getBatchSize());
+        $this->assertSame(10000, $this->config(['general/batch_size' => '999999'])->getBatchSize());
         $this->assertSame(
             Config::DEFAULT_BATCH_SIZE,
-            ConfigBuilder::build(['general/batch_size' => '0'])->getBatchSize()
+            $this->config(['general/batch_size' => '0'])->getBatchSize()
         );
     }
 

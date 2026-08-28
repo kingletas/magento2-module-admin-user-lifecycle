@@ -21,7 +21,7 @@ use Commerce\AdminUserLifecycle\Model\Service\AccountTransition;
 use Commerce\AdminUserLifecycle\Model\Service\DeactivateInactiveUsers;
 use Commerce\AdminUserLifecycle\Model\Service\LifecycleRunner;
 use Commerce\AdminUserLifecycle\Model\Service\StageContext;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryAdminUserFinder;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingEventManager;
@@ -35,6 +35,8 @@ use Psr\Log\NullLogger;
 
 class LifecycleManagementTest extends TestCase
 {
+    use ShippedConfig;
+
     private const DAY = 86400;
 
     private InMemoryAdminUserFinder $finder;
@@ -308,7 +310,7 @@ class LifecycleManagementTest extends TestCase
      */
     private function management(array $overrides = []): LifecycleManagement
     {
-        $config = ConfigBuilder::build($overrides);
+        $config = $this->config($overrides);
         $transition = TransitionBuilder::build($config, $this->writer, $this->notifier);
         $instant = new Instant();
         $events = new LifecycleEventDispatcher($this->events, new NullLogger());

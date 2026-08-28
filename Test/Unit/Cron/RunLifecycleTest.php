@@ -13,7 +13,7 @@ use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Model\RunReport;
 use Commerce\AdminUserLifecycle\Model\Service\LifecycleRunner;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -21,6 +21,8 @@ use RuntimeException;
 
 class RunLifecycleTest extends TestCase
 {
+    use ShippedConfig;
+
     private LifecycleRunner&MockObject $runner;
     private ReportNotifierInterface&MockObject $reporter;
 
@@ -75,7 +77,7 @@ class RunLifecycleTest extends TestCase
     private function cron(array $overrides = []): RunLifecycle
     {
         return new RunLifecycle(
-            ConfigBuilder::build($overrides),
+            $this->config($overrides),
             $this->runner,
             $this->reporter,
             new NullLogger()

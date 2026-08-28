@@ -9,15 +9,17 @@ namespace Commerce\AdminUserLifecycle\Test\Unit\Model\Service;
 
 use Commerce\AdminUserLifecycle\Model\JournalEntryMapper;
 use Commerce\AdminUserLifecycle\Model\Service\StageContext;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 class StageContextTest extends TestCase
 {
+    use ShippedConfig;
+
     public function testItHandsBackExactlyWhatItWasGiven(): void
     {
-        $config = ConfigBuilder::build();
+        $config = $this->config();
         $logger = new NullLogger();
         $mapper = new JournalEntryMapper();
 
@@ -33,7 +35,7 @@ class StageContextTest extends TestCase
      */
     public function testItsPropertiesAreReadOnly(): void
     {
-        $context = new StageContext(ConfigBuilder::build(), new NullLogger(), new JournalEntryMapper());
+        $context = new StageContext($this->config(), new NullLogger(), new JournalEntryMapper());
 
         $this->expectException(\Error::class);
         $context->logger = new NullLogger();

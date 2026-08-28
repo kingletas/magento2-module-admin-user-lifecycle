@@ -9,7 +9,7 @@ namespace Commerce\AdminUserLifecycle\Test\Unit\Model\Notification;
 
 use Commerce\AdminUserLifecycle\Model\Candidate;
 use Commerce\AdminUserLifecycle\Model\Notification\UserEmailNotifier;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Mail\TransportInterface;
 use Magento\Framework\Translate\Inline\StateInterface;
@@ -21,6 +21,8 @@ use RuntimeException;
 
 class UserEmailNotifierTest extends TestCase
 {
+    use ShippedConfig;
+
     private const NOW = 1_760_000_000;
 
     private TransportBuilder&MockObject $transportBuilder;
@@ -50,7 +52,7 @@ class UserEmailNotifierTest extends TestCase
             });
 
         $this->notifier = new UserEmailNotifier(
-            ConfigBuilder::build(),
+            $this->config(),
             $this->transportBuilder,
             $this->createMock(StateInterface::class),
             new NullLogger()

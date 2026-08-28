@@ -10,13 +10,15 @@ namespace Commerce\AdminUserLifecycle\Test\Unit\Cron;
 use Commerce\AdminUserLifecycle\Cron\PruneJournal;
 use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\RunContext;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 class PruneJournalTest extends TestCase
 {
+    use ShippedConfig;
+
     private const DAY = 86400;
 
     private InMemoryJournal $journal;
@@ -75,7 +77,7 @@ class PruneJournalTest extends TestCase
             }
         };
 
-        $cron = new PruneJournal(ConfigBuilder::build(), $journal, new NullLogger());
+        $cron = new PruneJournal($this->config(), $journal, new NullLogger());
 
         $this->expectNotToPerformAssertions();
 
@@ -87,7 +89,7 @@ class PruneJournalTest extends TestCase
      */
     private function cron(array $overrides = []): PruneJournal
     {
-        return new PruneJournal(ConfigBuilder::build($overrides), $this->journal, new NullLogger());
+        return new PruneJournal($this->config($overrides), $this->journal, new NullLogger());
     }
 
     private function record(int $occurredAt): void

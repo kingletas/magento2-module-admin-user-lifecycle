@@ -15,7 +15,7 @@ use Commerce\AdminUserLifecycle\Model\JournalEntryMapper;
 use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Model\Service\LifecycleRunner;
 use Commerce\AdminUserLifecycle\Model\StageResult;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryAdminUserFinder;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingEventManager;
@@ -25,6 +25,8 @@ use RuntimeException;
 
 class LifecycleRunnerTest extends TestCase
 {
+    use ShippedConfig;
+
     private InMemoryJournal $journal;
 
     private RecordingEventManager $events;
@@ -135,7 +137,7 @@ class LifecycleRunnerTest extends TestCase
         ?InMemoryAdminUserFinder $finder = null
     ): LifecycleRunner {
         return new LifecycleRunner(
-            ConfigBuilder::build($overrides),
+            $this->config($overrides),
             $finder ?? new InMemoryAdminUserFinder([]),
             $this->journal,
             new NullLogger(),

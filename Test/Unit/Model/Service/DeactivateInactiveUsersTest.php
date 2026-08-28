@@ -17,7 +17,7 @@ use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Model\Service\DeactivateInactiveUsers;
 use Commerce\AdminUserLifecycle\Model\Service\StageContext;
 use Commerce\AdminUserLifecycle\Model\StageResult;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryAdminUserFinder;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingNotifier;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingWriter;
@@ -27,6 +27,8 @@ use Psr\Log\NullLogger;
 
 class DeactivateInactiveUsersTest extends TestCase
 {
+    use ShippedConfig;
+
     private const DAY = 86400;
     private const NOW = 1_760_000_000;
 
@@ -169,7 +171,7 @@ class DeactivateInactiveUsersTest extends TestCase
         array $overrides = [],
         bool $dryRun = false
     ): StageResult {
-        $config = ConfigBuilder::build($overrides);
+        $config = $this->config($overrides);
 
         $stage = new DeactivateInactiveUsers(
             new StageContext($config, new NullLogger(), new JournalEntryMapper()),

@@ -13,7 +13,7 @@ use Commerce\AdminUserLifecycle\Model\Notification\ReportFormatter;
 use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Model\RunReport;
 use Commerce\AdminUserLifecycle\Model\StageResult;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
 use Magento\Framework\Escaper;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Mail\TransportInterface;
@@ -25,6 +25,8 @@ use RuntimeException;
 
 class ReportEmailNotifierTest extends TestCase
 {
+    use ShippedConfig;
+
     private const NOW = 1_760_000_000;
 
     private TransportBuilder&MockObject $transportBuilder;
@@ -151,7 +153,7 @@ class ReportEmailNotifierTest extends TestCase
     private function notifier(array $overrides): ReportEmailNotifier
     {
         return new ReportEmailNotifier(
-            ConfigBuilder::build($overrides),
+            $this->config($overrides),
             new ReportFormatter(new Escaper()),
             $this->transportBuilder,
             $this->createMock(StateInterface::class),
