@@ -12,9 +12,9 @@ use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Model\Service\AccountTransition;
 use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingNotifier;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingWriter;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\TransitionBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\RecordingNotifier;
+use Commerce\AdminUserLifecycle\Test\Support\RecordingWriter;
+use Commerce\AdminUserLifecycle\Test\Support\TransitionBuilder;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -10,7 +10,7 @@ namespace Commerce\AdminUserLifecycle\Test\Unit\Model\Event;
 use Commerce\AdminUserLifecycle\Model\Event\LifecycleEventDispatcher;
 use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\RunContext;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingEventManager;
+use Commerce\AdminUserLifecycle\Test\Support\RecordingEventManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

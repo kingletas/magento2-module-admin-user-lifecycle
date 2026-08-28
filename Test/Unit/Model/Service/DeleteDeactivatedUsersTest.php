@@ -17,10 +17,10 @@ use Commerce\AdminUserLifecycle\Model\Service\DeleteDeactivatedUsers;
 use Commerce\AdminUserLifecycle\Model\Service\StageContext;
 use Commerce\AdminUserLifecycle\Model\StageResult;
 use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryAdminUserFinder;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingWriter;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\TransitionBuilder;
+use Commerce\AdminUserLifecycle\Test\Support\InMemoryAdminUserFinder;
+use Commerce\AdminUserLifecycle\Test\Support\InMemoryJournal;
+use Commerce\AdminUserLifecycle\Test\Support\RecordingWriter;
+use Commerce\AdminUserLifecycle\Test\Support\TransitionBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

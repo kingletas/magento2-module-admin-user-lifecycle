@@ -16,8 +16,8 @@ use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\Policy\InactivityPolicy;
 use Commerce\AdminUserLifecycle\Model\Policy\ProtectionPolicy;
 use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryAdminUserFinder;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
+use Commerce\AdminUserLifecycle\Test\Support\InMemoryAdminUserFinder;
+use Commerce\AdminUserLifecycle\Test\Support\InMemoryJournal;
 use Magento\Framework\Exception\InputException;
 use PHPUnit\Framework\TestCase;
 

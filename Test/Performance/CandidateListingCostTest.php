@@ -20,7 +20,7 @@ use Commerce\AdminUserLifecycle\Model\Config;
 use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\Policy\InactivityPolicy;
 use Commerce\AdminUserLifecycle\Model\Policy\ProtectionPolicy;
-use Commerce\AdminUserLifecycle\Test\Behaviour\Fake\InMemoryDirectory;
+use Commerce\AdminUserLifecycle\Test\Support\InMemoryDirectory;
 use Commerce\Foundation\Test\Support\CountingScopeConfig;
 use Commerce\Foundation\Test\Support\BudgetAssertions;
 use PHPUnit\Framework\TestCase;

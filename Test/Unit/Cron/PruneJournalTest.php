@@ -11,7 +11,7 @@ use Commerce\AdminUserLifecycle\Cron\PruneJournal;
 use Commerce\AdminUserLifecycle\Model\JournalEntry;
 use Commerce\AdminUserLifecycle\Model\RunContext;
 use Commerce\AdminUserLifecycle\Test\Support\ShippedConfig;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
+use Commerce\AdminUserLifecycle\Test\Support\InMemoryJournal;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Commerce\AdminUserLifecycle\Test\Unit\Fake;
+namespace Commerce\AdminUserLifecycle\Test\Support;
 
 use Commerce\AdminUserLifecycle\Api\JournalQueryInterface;
 use Commerce\AdminUserLifecycle\Api\LifecycleJournalInterface;
