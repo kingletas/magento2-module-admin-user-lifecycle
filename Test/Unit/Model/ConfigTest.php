@@ -8,8 +8,8 @@ declare(strict_types=1);
 namespace Commerce\AdminUserLifecycle\Test\Unit\Model;
 
 use Commerce\AdminUserLifecycle\Model\Config;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ArrayScopeConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\ConfigBuilder;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +19,7 @@ class ConfigTest extends TestCase
 
     public function testTheSectionComesFromTheConstructorNotAConstant(): void
     {
-        $scopeConfig = new ArrayScopeConfig(['acme_adminusers/general/enabled' => '1']);
+        $scopeConfig = $this->scopeConfig(['acme_adminusers/general/enabled' => '1']);
         $config = new Config($scopeConfig, 'acme_adminusers');
 
         $this->assertTrue($config->isEnabled());
@@ -27,7 +27,7 @@ class ConfigTest extends TestCase
 
     public function testAnAbsentDryRunSettingReadsAsADryRun(): void
     {
-        $config = new Config(new ArrayScopeConfig([]), ConfigBuilder::SECTION);
+        $config = new Config($this->scopeConfig([]), ConfigBuilder::SECTION);
 
         $this->assertTrue(
             $config->isDryRun(),
@@ -172,5 +172,21 @@ class ConfigTest extends TestCase
             Config::DEFAULT_BATCH_SIZE,
             ConfigBuilder::build(['general/batch_size' => '0'])->getBatchSize()
         );
+    }
+
+    /**
+     * @param array<string, mixed> $values
+     */
+    private function scopeConfig(array $values): ScopeConfigInterface
+    {
+        $scopeConfig = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfig->method('getValue')->willReturnCallback(
+            static fn (string $path): mixed => $values[$path] ?? null
+        );
+        $scopeConfig->method('isSetFlag')->willReturnCallback(
+            static fn (string $path): bool => !in_array($values[$path] ?? null, [null, '', '0', 0, false], true)
+        );
+
+        return $scopeConfig;
     }
 }

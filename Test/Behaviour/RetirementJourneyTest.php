@@ -29,7 +29,7 @@ use Commerce\AdminUserLifecycle\Model\Service\StageContext;
 use Commerce\AdminUserLifecycle\Model\Service\WarnInactiveUsers;
 use Commerce\AdminUserLifecycle\Test\Behaviour\Fake\InMemoryDirectory;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingEventManager;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ArrayScopeConfig;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
@@ -471,7 +471,7 @@ class RetirementJourneyTest extends TestCase
 
     private function config(): Config
     {
-        return new Config(new ArrayScopeConfig($this->settings), self::SECTION);
+        return new Config($this->scopeConfig($this->settings), self::SECTION);
     }
 
     private function activeAdmin(
@@ -505,5 +505,21 @@ class RetirementJourneyTest extends TestCase
         }
 
         return array_values(array_unique($actions));
+    }
+
+    /**
+     * @param array<string, mixed> $values
+     */
+    private function scopeConfig(array $values): ScopeConfigInterface
+    {
+        $scopeConfig = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfig->method('getValue')->willReturnCallback(
+            static fn (string $path): mixed => $values[$path] ?? null
+        );
+        $scopeConfig->method('isSetFlag')->willReturnCallback(
+            static fn (string $path): bool => !in_array($values[$path] ?? null, [null, '', '0', 0, false], true)
+        );
+
+        return $scopeConfig;
     }
 }

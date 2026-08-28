@@ -28,10 +28,10 @@ use Commerce\AdminUserLifecycle\Model\Service\LifecycleRunner;
 use Commerce\AdminUserLifecycle\Model\Service\StageContext;
 use Commerce\AdminUserLifecycle\Model\Service\WarnInactiveUsers;
 use Commerce\AdminUserLifecycle\Test\Behaviour\Fake\InMemoryDirectory;
-use Commerce\AdminUserLifecycle\Test\Unit\Fake\ArrayScopeConfig;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\InMemoryJournal;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingEventManager;
 use Commerce\AdminUserLifecycle\Test\Unit\Fake\RecordingNotifier;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -357,7 +357,7 @@ class OutOfProcessJourneyTest extends TestCase
 
     private function config(): Config
     {
-        return new Config(new ArrayScopeConfig($this->settings), self::SECTION);
+        return new Config($this->scopeConfig($this->settings), self::SECTION);
     }
 
     private function account(int $userId, string $username, int $dormantDays): Candidate
@@ -372,5 +372,21 @@ class OutOfProcessJourneyTest extends TestCase
             $this->now - (900 * self::DAY),
             3
         );
+    }
+
+    /**
+     * @param array<string, mixed> $values
+     */
+    private function scopeConfig(array $values): ScopeConfigInterface
+    {
+        $scopeConfig = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfig->method('getValue')->willReturnCallback(
+            static fn (string $path): mixed => $values[$path] ?? null
+        );
+        $scopeConfig->method('isSetFlag')->willReturnCallback(
+            static fn (string $path): bool => !in_array($values[$path] ?? null, [null, '', '0', 0, false], true)
+        );
+
+        return $scopeConfig;
     }
 }
