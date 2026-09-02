@@ -421,12 +421,13 @@ GROUP BY action ORDER BY entries DESC;
 ## Tests
 
 ```bash
-# Unit — needs only a Magento autoloader, no database
-M2_VENDOR=/path/to/magento/vendor vendor/bin/phpunit --testsuite unit
+make check
+```
 
-# Integration — must run inside a Magento installation
-vendor/bin/phpunit -c dev/tests/integration/phpunit.xml \
-  app/code/Commerce/AdminUserLifecycle/Test/Integration
+The coding standard and all four suites — 293 tests, no database and no Magento bootstrap. Narrow it to one suite with `SUITE`:
+
+```bash
+make test SUITE=behaviour
 ```
 
 The unit suite covers every class one-to-one, and each of the bugs described
