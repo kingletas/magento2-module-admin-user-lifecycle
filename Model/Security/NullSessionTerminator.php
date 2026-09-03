@@ -14,7 +14,7 @@ use Commerce\AdminUserLifecycle\Api\SessionTerminatorInterface;
 /**
  * Does nothing, for deployments without Magento_Security's session registry.
  *
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+ * @SuppressWarnings("PHPMD.UnusedFormalParameter")
  */
 class NullSessionTerminator implements SessionTerminatorInterface
 {

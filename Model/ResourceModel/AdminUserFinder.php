@@ -165,7 +165,7 @@ class AdminUserFinder implements AdminUserFinderInterface
             (int) ($row['is_active'] ?? 0) === 1,
             $this->toTimestamp($row['logdate'] ?? null),
             $this->toTimestamp($row['created'] ?? null) ?? 0,
-            isset($row['role_id']) && $row['role_id'] !== null ? (int) $row['role_id'] : null
+            isset($row['role_id']) ? (int) $row['role_id'] : null
         );
     }
 
